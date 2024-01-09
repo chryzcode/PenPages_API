@@ -16,8 +16,9 @@ const postSchema = new mongoose.Schema(
       required: [true, "Title field is compulsory"],
       maxlength: 70,
     },
-    image: {
-      type: Buffer,
+    image:{
+        data: Buffer,
+        contentType: String
     },
     body: {
       type: String,
