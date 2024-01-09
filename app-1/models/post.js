@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-
-
 const tagSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -41,7 +39,19 @@ const postSchema = new mongoose.Schema(
     tag: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "tagSchema",
+      required: ["true", "Tag firld is required"],
+    },
+    type: {
+      type: String,
+      enum: ["article", "poem", "book"],
+      default: "article",
     },
   },
   { timestamps: true }
 );
+
+// module.exports = mongoose.model(
+//   'Tag', tagSchema,
+//   'Comment', commentSchema,
+//   'Post', postSchema,
+// );
