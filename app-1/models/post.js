@@ -29,11 +29,11 @@ const postSchema = new mongoose.Schema(
       ref: userSchema,
       required: [true, "Author field is compulsory"],
     },
-    tag: {
+    tag: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: tagSchema,
-      required: ["true", "Tag firld is required"],
-    },
+      required: ["true", "Tag field is required"],
+    }],
     type: {
       type: String,
       enum: ["article", "poem", "book"],
@@ -68,7 +68,7 @@ const commentSchema = new mongoose.Schema(
   }
 );
 
-const replycommentSchema = new mongoose.Schema(
+const replyCommentSchema = new mongoose.Schema(
   {
     comment: {
       type: mongoose.Schema.ObjectId,
@@ -89,8 +89,9 @@ const replycommentSchema = new mongoose.Schema(
   }
 );
 
-// module.exports = mongoose.model(
-//   'Tag', tagSchema,
-//   'Comment', commentSchema,
-//   'Post', postSchema,
-// );
+const Tag = mongoose.model("Tag", tagSchema);
+const Comment = mongoose.model("Comment", commentSchema);
+const Post = mongoose.model("Post", postSchema); 
+const replyComment = mongoose.model("replyComment", replyCommentSchema);
+
+module.exports = mongoose.model(Tag, Comment, Post, replyComment);
