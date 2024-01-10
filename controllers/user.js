@@ -13,16 +13,16 @@ const login = async (req, res) => {
   if (!email || !password) {
     throw new BadRequestError("Put in your email and password");
   }
-  const user = User.findOne({ email });
+  const user = await User.findOne({ email });
   if (!user) {
     throw new UnauthenticatedError("User does not exist");
   }
-  const passwordMatch = user.comparePassword(password);
+  const passwordMatch = await user.comparePassword(password);
   if (!passwordMatch) {
     throw new UnauthenticatedError("Invalid password");
   }
-  user.createJWT();
+  const token = user.createJWT();
   res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
 };
 
-module.exports = { register, login };
+module.exports = { register, login, };
