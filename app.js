@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const connectDB = require("./db/connect");
+const authRoute = require('./routes/user')
 
 app = express();
 
@@ -10,6 +10,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("hi");
 });
+
+app.use('/api/v1/auth', authRoute)
 
 const port = process.env.PORT || 3000;
 
