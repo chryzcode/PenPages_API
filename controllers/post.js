@@ -13,6 +13,8 @@ const getUserPosts = async (req, res) => {
   res.status(StatusCodes.OK).json({ userPosts })
 }
 
+// const create
+
 module.exports = {
   createPost,
   getUserPosts,
