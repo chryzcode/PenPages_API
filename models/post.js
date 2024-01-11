@@ -10,8 +10,7 @@ const postSchema = new mongoose.Schema(
     image: {
       data: Buffer,
       contentType: String,
-      //make required true later
-      required: [false],
+      //make required later 
     },
     body: {
       type: String,
