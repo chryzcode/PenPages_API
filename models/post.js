@@ -17,7 +17,9 @@ const postSchema = new mongoose.Schema(
     },
     image:{
         data: Buffer,
-        contentType: String
+      contentType: String,
+      //make required true later
+      required: true,
     },
     body: {
       type: String,

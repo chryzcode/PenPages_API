@@ -9,8 +9,8 @@ const createPost = async (req, res) => {
 };
 
 const getUserPosts = async (req, res) => {
-    console.log(req)
-    // const userPosts = await Post.find({ author: req.User });
+  const userPosts = await Post.find({ author: req.user.userId });
+  res.status(StatusCodes.OK).json({ userPosts })
 }
 
 module.exports = {
