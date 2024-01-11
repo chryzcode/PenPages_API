@@ -4,4 +4,4 @@ const { createComment, } = require('../controllers/comment')
 
 router.route('/:postId').post(createComment)
 
-module.exports  = route
+module.exports  = router
