@@ -8,6 +8,7 @@ app = express();
 
 const authRouter = require("./routes/user");
 const postRouter = require("./routes/post");
+const tagRouter = require("./routes/tag");
 
 
 // error handler
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/posts", authenticateUser, postRouter);
+app.use("/api/v1/tag", tagRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
