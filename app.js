@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", authRouter);
 
 app.use("/api/v1/post", postRouter.get("/", getAllPosts));
 app.use("/api/v1/post", authenticateUser, postRouter);

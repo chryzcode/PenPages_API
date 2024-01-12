@@ -25,4 +25,9 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
 };
 
-module.exports = { register, login, };
+const getAllUsers = async (req, res) => {
+  const users = await User.find({})
+  res.status(StatusCodes.OK).json({users})
+}
+
+module.exports = { register, login, getAllUsers};
