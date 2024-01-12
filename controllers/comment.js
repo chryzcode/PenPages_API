@@ -14,8 +14,8 @@ const createComment = async (req, res) => {
 const createReplyComment = async (req, res) => {
   const { commentId } = req.params;
   req.body.comment = commentId;
-  const replyComment = await replyComment.create({ ...req.body });
-  res.status(StatusCodes.CREATED).json({ replyComment });
+  const comment = await replyComment.create({ ...req.body });
+  res.status(StatusCodes.CREATED).json({ comment });
 };
 
 module.exports = { createComment,  createReplyComment};
