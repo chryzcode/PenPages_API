@@ -5,6 +5,7 @@ require("express-async-errors");
 const express = require("express");
 app = express();
 
+const { getAllPosts} = require("./controllers/post");
 
 const authRouter = require("./routes/user");
 const postRouter = require("./routes/post");
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/post", postRouter.get("/", getAllPosts));
 app.use("/api/v1/post", authenticateUser, postRouter);
 app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/comment", authenticateUser, commentRouter);

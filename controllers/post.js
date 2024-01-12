@@ -8,14 +8,22 @@ const createPost = async (req, res) => {
   res.status(StatusCodes.CREATED).json({post});
 };
 
+const getAllPosts = async (req, res) => {
+  const allPosts = await Post.find({}).sort("createdAt");
+  res.status(StatusCodes.OK).json({ allPosts });
+};
+
 const getUserPosts = async (req, res) => {
-  const userPosts = await Post.find({ author: req.user.userId });
+  const userPosts = await Post.find({ author: req.user.userId }).sort("createdAt");
   res.status(StatusCodes.OK).json({ userPosts })
 }
+
+
 
 
 
 module.exports = {
   createPost,
   getUserPosts,
+  getAllPosts,
 };
