@@ -6,4 +6,10 @@ const createTag = async (req, res) => {
     res.status(StatusCodes.CREATED).json({tag})
 }
 
-module.exports = {createTag, }
+const getAllTags = async (req, res) => {
+  const tags = await Tag.find({});
+  res.status(StatusCodes.OK).json({ tags });
+};
+
+
+module.exports = { createTag, getAllTags };
