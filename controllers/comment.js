@@ -18,4 +18,16 @@ const createReplyComment = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ comment });
 };
 
-module.exports = { createComment,  createReplyComment};
+const getAllComments = async (req, res) => {
+  const comments = await Comment.find({ });
+  res.status(StatusCodes.OK).json({ comments });
+};
+
+
+const getAllReplyComments = async (req, res) => {
+  const comments = await replyComment.find({});
+  res.status(StatusCodes.OK).json({ comments });
+};
+
+
+module.exports = { createComment, createReplyComment, getAllComments, getAllReplyComments };
