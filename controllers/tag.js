@@ -13,6 +13,9 @@ export const getAllTags = async (req, res) => {
 
 export const getTag = async (req, res) => {
 	const {tagId} = req.params
- 	const tag = await Tag.find({ _id: tagId });
+	const tag = await Tag.findOne({ _id: tagId });
+	if (!tag) {
+    throw new NotFoundError(`Tag with id ${tagId} does not exist`);
+  }
   res.status(StatusCodes.OK).json({ tag });
 };
