@@ -4,7 +4,7 @@ import "express-async-errors";
 import mongoose from "mongoose";
 
 import { getAllComments, getAllReplyComments } from "./controllers/comment.js";
-import { getAllPosts } from "./controllers/post.js";
+import { getAllPosts, getPost } from "./controllers/post.js";
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/user", authRouter);
 
-app.use("/api/v1/post", postRouter.get("/", getAllPosts));
+app.use("/api/v1/post", postRouter.get("/", getAllPosts).get("/:postId", getPost));
 app.use("/api/v1/post", authenticateUser, postRouter);
 
 app.use("/api/v1/tag", tagRouter);
