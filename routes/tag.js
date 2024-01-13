@@ -1,9 +1,8 @@
-const express = require('express')
-const router = express.Router()
+import express from "express";
+import { createTag, getAllTags } from "../controllers/tag";
 
-const { createTag, getAllTags} = require('../controllers/tag')
+const router = express.Router();
 
+router.route("/").post(createTag).get(getAllTags);
 
-router.route('/').post(createTag).get(getAllTags)
-
-module.exports = router
+export default router;
