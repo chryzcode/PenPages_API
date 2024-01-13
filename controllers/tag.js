@@ -12,6 +12,7 @@ export const getAllTags = async (req, res) => {
 };
 
 export const getTag = async (req, res) => {
-	const tag = await Tag.find({ _id: tagId });
+	const {tagId} = req.params
+ 	const tag = await Tag.find({ _id: tagId });
   res.status(StatusCodes.OK).json({ tag });
 };
