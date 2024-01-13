@@ -4,7 +4,6 @@ import Post from "../models/post.js";
 
 export const createComment = async (req, res) => {
 	const { postId } = req.params;
-	// const post = await Post.find({ _id: postId });
 	req.body.post = postId;
 	req.body.user = req.user.userId;
 	const comment = await Comment.create({ ...req.body });
@@ -18,12 +17,14 @@ export const createReplyComment = async (req, res) => {
 	res.status(StatusCodes.CREATED).json({ comment });
 };
 
-export const getAllComments = async (req, res) => {
-	const comments = await Comment.find({});
+export const getPostAllComments = async (req, res) => {
+	const {postId} = req.params
+	const comments = await Comment.find({ post: postId });
 	res.status(StatusCodes.OK).json({ comments });
 };
 
-export const getAllReplyComments = async (req, res) => {
-	const comments = await replyComment.find({});
+export const getPostAllReplyComments = async (req, res) => {
+	const {commentId} = req.params
+	const comments = await replyComment.find({ comment: commentId });
 	res.status(StatusCodes.OK).json({ comments });
 };

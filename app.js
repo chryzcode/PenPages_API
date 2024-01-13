@@ -3,7 +3,7 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 
-import { getAllComments, getAllReplyComments } from "./controllers/comment.js";
+import { getPostAllComments, getPostAllReplyComments } from "./controllers/comment.js";
 import { getAllPosts, getPost } from "./controllers/post.js";
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
@@ -34,8 +34,8 @@ app.use("/api/v1/post", authenticateUser, postRouter);
 app.use("/api/v1/tag", tagRouter);
 
 app.use(
-	"/api/v1/comment",
-	commentRouter.get("/:postId", getAllComments).get("/reply/:commentId", getAllReplyComments)
+  "/api/v1/comment",
+  commentRouter.get("/:postId", getPostAllComments).get("/reply/:commentId", getPostAllReplyComments)
 );
 app.use("/api/v1/comment", authenticateUser, commentRouter);
 
