@@ -13,6 +13,12 @@ export const getAllPosts = async (req, res) => {
 	res.status(StatusCodes.OK).json({ allPosts });
 };
 
+export const getPost = async (req, res) => {
+	const { postId } = req.params
+	const post = await Post.find({ _id: postId })
+	res.status(StatusCodes.OK).json({post})
+}
+
 export const getUserPosts = async (req, res) => {
 	const userPosts = await Post.find({ author: req.user.userId }).sort("createdAt");
 	res.status(StatusCodes.OK).json({ userPosts });
