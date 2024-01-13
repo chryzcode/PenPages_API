@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, NotFoundError } from "../errors";
-import Post from "../models/post";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
+import Post from "../models/post.js";
 
 export const createPost = async (req, res) => {
 	req.body.author = req.user.userId;

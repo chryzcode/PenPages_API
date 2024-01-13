@@ -3,18 +3,18 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 
-import { getAllComments, getAllReplyComments } from "./controllers/comment";
-import { getAllPosts } from "./controllers/post";
-import commentRouter from "./routes/comment";
-import postRouter from "./routes/post";
-import tagRouter from "./routes/tag";
-import authRouter from "./routes/user";
+import { getAllComments, getAllReplyComments } from "./controllers/comment.js";
+import { getAllPosts } from "./controllers/post.js";
+import commentRouter from "./routes/comment.js";
+import postRouter from "./routes/post.js";
+import tagRouter from "./routes/tag.js";
+import authRouter from "./routes/user.js";
 
 // error handler
-import errorHandlerMiddleware from "./middleware/error-handler";
-import notFoundMiddleware from "./middleware/not-found";
+import errorHandlerMiddleware from "./middleware/error-handler.js";
+import notFoundMiddleware from "./middleware/not-found.js";
 
-import authenticateUser from "./middleware/authentication";
+import authenticateUser from "./middleware/authentication.js";
 
 const app = express();
 const port = process.env.PORT || 3000;

@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import Tag from "../models/tag";
+import Tag from "../models/tag.js";
 
 export const createTag = async (req, res) => {
 	const tag = await Tag.create({ ...req.body });

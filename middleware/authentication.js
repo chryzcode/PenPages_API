@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { UnauthenticatedError } from "../errors";
-import User from "../models/user";
+import { UnauthenticatedError } from "../errors/index.js";
+import User from "../models/user.js";
 
 export default async (req, res, next) => {
 	// check header

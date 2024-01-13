@@ -1,5 +1,5 @@
 import express from "express";
-import { createTag, getAllTags } from "../controllers/tag";
+import { createTag, getAllTags } from "../controllers/tag.js";
 
 const router = express.Router();
 
