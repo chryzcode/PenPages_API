@@ -25,6 +25,6 @@ export const getPostAllComments = async (req, res) => {
 
 export const getPostAllReplyComments = async (req, res) => {
 	const {commentId} = req.params
-	const comments = await replyComment.find({ comment: commentId });
-	res.status(StatusCodes.OK).json({ comments });
+	const replycomments = await replyComment.find({ comment: commentId });
+	res.status(StatusCodes.OK).json({ replycomments });
 };
