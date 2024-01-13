@@ -1,12 +1,11 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
 const tagSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Name field is compulsory"],
-    maxlength: 70,
-  },
+	name: {
+		type: String,
+		required: [true, "Name field is compulsory"],
+		maxlength: 70,
+	},
 });
 
-
-module.exports = mongoose.model("Tag", tagSchema);
+export default mongoose.model("Tag", tagSchema);

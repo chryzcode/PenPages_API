@@ -1,35 +1,30 @@
-require("dotenv").config();
-require("express-async-errors");
+import "dotenv/config";
+import express from "express";
+import "express-async-errors";
+import mongoose from "mongoose";
 
-
-const express = require("express");
-app = express();
-
-const { getAllPosts } = require("./controllers/post");
-const { getAllComments, getAllReplyComments } = require("./controllers/comment");
-
-const authRouter = require("./routes/user");
-const postRouter = require("./routes/post");
-const tagRouter = require("./routes/tag");
-const commentRouter = require("./routes/comment");
-
+import { getAllComments, getAllReplyComments } from "./controllers/comment";
+import { getAllPosts } from "./controllers/post";
+import commentRouter from "./routes/comment";
+import postRouter from "./routes/post";
+import tagRouter from "./routes/tag";
+import authRouter from "./routes/user";
 
 // error handler
-const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error-handler");
+import errorHandlerMiddleware from "./middleware/error-handler";
+import notFoundMiddleware from "./middleware/not-found";
 
+import authenticateUser from "./middleware/authentication";
+
+const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
-
-
-const connectDB = require("./db/connect");
-const authenticateUser = require("./middleware/authentication");
-
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Penpages API");
+	res.send("Penpages API");
 });
-
 
 app.use("/api/v1/user", authRouter);
 
@@ -38,22 +33,22 @@ app.use("/api/v1/post", authenticateUser, postRouter);
 
 app.use("/api/v1/tag", tagRouter);
 
-app.use("/api/v1/comment", commentRouter.get("/:postId", getAllComments).get("/reply/:commentId", getAllReplyComments));
+app.use(
+	"/api/v1/comment",
+	commentRouter.get("/:postId", getAllComments).get("/reply/:commentId", getAllReplyComments)
+);
 app.use("/api/v1/comment", authenticateUser, commentRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-
-const port = process.env.PORT || 3000;
-
 const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(port, () => console.log(`server is running on port ${port}`));
-  } catch (error) {
-    console.log(error);
-  }
+	try {
+		await mongoose.connect(process.env.MONGO_URI);
+		app.listen(port, () => console.log(`server is running on port ${port}`));
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 start();
