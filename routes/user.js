@@ -9,7 +9,7 @@ router.route("/auth/register").post(register);
 router.route("/auth/login").post(login);
 router.route("/all-users").get(getAllUsers);
 router.route("/:username").get(getUser);
-router.route("/update").put(authenticateUser, updateUser);
+router.route("/update").put(authenticateUser,updateUser);
 
 
 export default router;
