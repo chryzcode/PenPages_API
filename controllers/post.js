@@ -30,7 +30,7 @@ export const getUserPosts = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req.user;
+  const userId = req.user.userId;
   const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, { runValidators: true });
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
