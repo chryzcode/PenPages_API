@@ -38,3 +38,9 @@ export const getUser = async (req, res) => {
 	}
 	res.status(StatusCodes.OK).json({user})
 };
+
+export const updateUser = async (req, res) => {
+  const { userId } = req.user
+  const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true })
+  res.status(StatusCodes.OK).json({user})
+}
