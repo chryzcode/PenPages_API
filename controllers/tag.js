@@ -19,3 +19,9 @@ export const getTag = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ tag });
 };
+
+export const updateTag = async (req, res) => {
+  const { tagId } = req.params;
+  const tag = await Tag.findOneAndUpdate({ _id: tagId }, ...req.body, { new: true, runValidators: true });
+  res.status(StatusCodes.OK).json({ tag });
+};
