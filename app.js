@@ -3,8 +3,7 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 
-import { getPostAllComments, getPostAllReplyComments } from "./controllers/comment.js";
-import { getAllPosts, getPost } from "./controllers/post.js";
+
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
@@ -14,7 +13,6 @@ import authRouter from "./routes/user.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 
-import authenticateUser from "./middleware/authentication.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,12 +28,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/tag", tagRouter);
-
-app.use(
-  "/api/v1/comment",
-  commentRouter.get("/:postId", getPostAllComments).get("/reply/:commentId", getPostAllReplyComments)
-);
-app.use("/api/v1/comment", authenticateUser, commentRouter);
+app.use("/api/v1/comment", commentRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

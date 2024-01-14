@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { Comment, replyComment } from "../models/comment.js";
-import Post from "../models/post.js";
+
 
 export const createComment = async (req, res) => {
 	const { postId } = req.params;
