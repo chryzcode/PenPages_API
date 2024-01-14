@@ -41,6 +41,12 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { userId } = req.user
+  if (!userId) {
+     throw new UnauthenticatedError("Unauthentication error");
+  }
   const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true })
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exist`);
+  }
   res.status(StatusCodes.OK).json({user})
 }
