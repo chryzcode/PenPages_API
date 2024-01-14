@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", authRouter);
 
 app.use("/api/v1/post", postRouter);
-app.use("/api/v1/post", postRouter.get("/", getAllPosts).get("/:postId", getPost));
+
 
 
 app.use("/api/v1/tag", tagRouter);
