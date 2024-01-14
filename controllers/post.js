@@ -27,3 +27,13 @@ export const getUserPosts = async (req, res) => {
   const userPosts = await Post.find({ author: req.user.userId }).sort("createdAt");
   res.status(StatusCodes.OK).json({ userPosts });
 };
+
+export const updatePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+  const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, { runValidators: true });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} does not exist`);
+  }
+  res.status(StatusCodes.OK).json({ post });
+};
