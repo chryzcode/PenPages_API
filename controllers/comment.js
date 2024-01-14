@@ -13,6 +13,7 @@ export const createComment = async (req, res) => {
 export const createReplyComment = async (req, res) => {
   const { commentId } = req.params;
   req.body.comment = commentId;
+  req.body.user = req.user.userId;
   const comment = await replyComment.create({ ...req.body });
   res.status(StatusCodes.CREATED).json({ comment });
 };
@@ -40,6 +41,21 @@ export const updateComment = async (req, res) => {
   });
   if (!comment) {
     throw new NotFoundError(`Comment with id ${commentId} does not exist`);
+  }
+  res.status(StatusCodes.OK).json({ comment });
+};
+
+export const updateReplyComment = async (req, res) => {
+  const {
+    params: { replyCommentId },
+    user: { userId },
+  } = req;
+  const comment = await replyComment.findOneAndUpdate({ _id: replyCommentId, user: userId }, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!comment) {
+    throw new NotFoundError(`re Comment with id ${replyCommentId} does not exist`);
   }
   res.status(StatusCodes.OK).json({ comment });
 };
