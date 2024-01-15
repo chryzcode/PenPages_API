@@ -40,3 +40,13 @@ export const updatePost = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ post });
 };
+
+export const deletePost = async (req, res) => {
+  const { postId } = req.params;
+  const userId = req.user.userId;
+  const post = await Post.findOneAndDelete({ _id: postId, author: userId });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} does not exist`);
+  }
+  res.status(StatusCodes.OK).send();
+};
