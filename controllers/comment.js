@@ -69,3 +69,14 @@ export const deleteComment = async (req, res) => {
   }
   res.status(StatusCodes.OK).send();
 };
+
+
+export const deleteReplyComment = async (req, res) => {
+  const { replyCommentId } = req.params;
+  const { userId } = req.user;
+  const comment = await replyComment.findOneAndDelete({ _id: replyCommentId, user: userId });
+  if (!comment) {
+    throw new NotFoundError(`Comment with id ${replyCommentId} does not exist`);
+  }
+  res.status(StatusCodes.OK).send();
+};
