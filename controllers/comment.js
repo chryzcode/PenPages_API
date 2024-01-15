@@ -55,7 +55,17 @@ export const updateReplyComment = async (req, res) => {
     runValidators: true,
   });
   if (!comment) {
-    throw new NotFoundError(`re Comment with id ${replyCommentId} does not exist`);
+    throw new NotFoundError(`Comment with id ${replyCommentId} does not exist`);
   }
   res.status(StatusCodes.OK).json({ comment });
+};
+
+export const deleteComment = async (req, res) => {
+  const { commentId } = req.params;
+  const { userId } = req.user;
+  const comment = await Comment.findOneAndDelete({ _id: commentId, user: userId });
+  if (!comment) {
+    throw new NotFoundError(`Comment with id ${commentId} does not exist`);
+  }
+  res.status(StatusCodes.OK).send();
 };
