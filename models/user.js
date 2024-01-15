@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import nodemailer from "nodemailer";
+import nodemailer from "nodemailer"
 
 const userSchema = new mongoose.Schema(
   {
