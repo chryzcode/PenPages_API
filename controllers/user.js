@@ -47,3 +47,13 @@ export const updateUser = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({user})
 }
+
+
+export const deleteUser = async (req, res) => {
+  const { userId } = req.user;
+  const user = await User.findOneAndDelete({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exist`);
+  }
+  res.status(StatusCodes.OK).send();
+};
