@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 
 const userSchema = new mongoose.Schema(
   {
@@ -73,7 +74,8 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function () {
 	const salt = await bcrypt.genSalt(10);
-	this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, salt);
+  
 });
 
 userSchema.methods.createJWT = function () {
