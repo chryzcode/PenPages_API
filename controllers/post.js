@@ -50,3 +50,8 @@ export const deletePost = async (req, res) => {
   }
   res.status(StatusCodes.OK).send();
 };
+
+export const likePost = async (req, res) => {
+  const { postId } = req.params
+  const 
+}

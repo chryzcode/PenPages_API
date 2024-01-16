@@ -36,10 +36,13 @@ const postSchema = new mongoose.Schema(
       enum: ["article", "poem", "book"],
       default: "article",
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      {
+        type: Number,
+        user: "User",
+        default: 0,
+      },
+    ],
   },
   { timestamps: true }
 );
