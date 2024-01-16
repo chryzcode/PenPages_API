@@ -1,4 +1,4 @@
-import { Likes } from "../models/likes";
+import { Likes } from "../models/likes.js";
 import { StatusCodes } from "http-status-codes";
 
 export const like = async (req, res) => {

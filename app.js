@@ -3,17 +3,15 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 
-
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
 import authRouter from "./routes/user.js";
-import likesRouter from "./routes/likes.js"
+import likesRouter from "./routes/likes.js";
 
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundMiddleware from "./middleware/not-found.js";
-
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,9 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-	res.send("Penpages API");
+  res.send("Penpages API");
 });
-
 
 app.use("/api/v1/user", authRouter);
 app.use("/api/v1/post", postRouter);
@@ -32,17 +29,16 @@ app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/comment", likesRouter);
 
-
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const start = async () => {
-	try {
-		await mongoose.connect(process.env.MONGO_URI);
-		app.listen(port, () => console.log(`server is running on port ${port}`));
-	} catch (error) {
-		console.log(error);
-	}
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    app.listen(port, () => console.log(`server is running on port ${port}`));
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 start();

@@ -1,6 +1,6 @@
 import express from "express"
 import authenticateUser from '../middleware/authentication.js'
-import { like } from "../controllers/likes"
+import { like } from "../controllers/likes.js"
 
 const router = express.Router()
 
