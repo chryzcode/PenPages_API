@@ -51,7 +51,10 @@ export const deletePost = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-export const likePost = async (req, res) => {
-  const { postId } = req.params
-  const 
-}
+// export const likePost = async (req, res) => {
+//   const { postId } = req.params;
+//   const { userId } = req.user;
+//   req.body.likes = userId
+//   const post = Post.findOne({ _id: postId }, );
+//   res.status(StatusCodes.OK).json({post});
+// };

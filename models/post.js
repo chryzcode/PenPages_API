@@ -38,9 +38,8 @@ const postSchema = new mongoose.Schema(
     },
     likes: [
       {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
         user: "User",
-        default: 0,
       },
     ],
   },
