@@ -12,3 +12,6 @@ const likesSchema = new mongoose.Schema({
     required: [true, "User field is required"],
   },
 });
+
+
+export const Likes =  mongoose.model('Likes', likesSchema)
