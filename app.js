@@ -27,7 +27,7 @@ app.use("/api/v1/user", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/comment", commentRouter);
-app.use("/api/v1/comment", likesRouter);
+app.use("/api/v1/likes", likesRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
