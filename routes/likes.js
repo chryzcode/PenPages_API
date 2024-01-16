@@ -4,7 +4,7 @@ import { like } from "../controllers/likes.js"
 
 const router = express.Router()
 
-router.route(":/postId").post(authenticateUser, like)
+router.route("/:postId").post(authenticateUser, like)
 
 
 export default router
