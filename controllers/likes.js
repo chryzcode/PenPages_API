@@ -5,7 +5,6 @@ export const likePost = async (req, res) => {
   const { postId } = req.params;
   const { userId } = req.user;
   const liked = await Likes.findOne({ post: postId, user: userId });
-  console.log(liked);
   if (liked) {
     await Likes.findOneAndDelete({ post: postId, user: userId });
   } else {
@@ -15,4 +14,8 @@ export const likePost = async (req, res) => {
   res.status(StatusCodes.OK).json({ likes: likes });
 };
 
-export 
+export const likeComment = async (req, res) => {
+  const { commentId } = req.params 
+  const { userId } = req.user
+  
+}  
