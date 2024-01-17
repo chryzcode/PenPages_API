@@ -7,7 +7,7 @@ import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
 import authRouter from "./routes/user.js";
-import postLikesRouter from "./routes/postLikes.js";
+
 
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -27,7 +27,6 @@ app.use("/api/v1/user", authRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/comment", commentRouter);
-app.use("/api/v1/post/likes", postLikesRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
