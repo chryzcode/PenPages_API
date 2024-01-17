@@ -60,6 +60,6 @@ export const likePost = async (req, res) => {
   } else {
     await postLikes.create({ post: postId, user: userId });
   }
-  const postLikes = (await postLikes.find({ post: postId })).length;
-  res.status(StatusCodes.OK).json({ postLikesCount: postLikes });
+  const likes = (await postLikes.find({ post: postId })).length;
+  res.status(StatusCodes.OK).json({ postLikesCount: likes });
 };
