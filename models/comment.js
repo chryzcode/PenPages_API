@@ -53,19 +53,19 @@ const replyCommentSchema = new mongoose.Schema(
 );
 
 
-const commentLikesSchema = new mongoose.Schema({
+const likeCommentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "User field is required"],
   },
-  post: {
+  comment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Comment",
-    required: [true, "User field is required"],
+    required: [true, "Comment field is required"],
   },
 });
 
 export const Comment = mongoose.model("Comment", commentSchema);
 export const replyComment = mongoose.model("replyComment", replyCommentSchema);
-export const commentLikes = mongoose.model("commentLikesSchema", commentLikes);
+export const likeComment = mongoose.model("likeComment", likeCommentSchema);

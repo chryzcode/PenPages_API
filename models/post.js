@@ -50,7 +50,7 @@ const postLikesSchema = new mongoose.Schema({
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
-    required: [true, "User field is required"],
+    required: [true, "Post field is required"],
   },
 });
 
