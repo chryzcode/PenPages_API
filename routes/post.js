@@ -14,6 +14,6 @@ const router = express.Router();
 
 router.route("/").get(getAllPosts).post(authenticateUser, createPost);
 router.route("/:postId").get(getPost).put(authenticateUser, updatePost).delete(authenticateUser, deletePost);
-router.route("/likes/:postId").post(authenticateUser, likePost);
+router.route("/like/:postId").post(authenticateUser, likePost);
 
 export default router;
