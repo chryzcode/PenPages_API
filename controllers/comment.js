@@ -70,7 +70,6 @@ export const deleteComment = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-
 export const deleteReplyComment = async (req, res) => {
   const { replyCommentId } = req.params;
   const { userId } = req.user;
@@ -81,16 +80,15 @@ export const deleteReplyComment = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-
 export const likeComment = async (req, res) => {
   const { commentId } = req.params;
   const { userId } = req.user;
-  const liked = await likeComment.findOne({ post: postId, user: userId });
+  const liked = await likeComment.findOne({ comment: commentId, user: userId });
   if (liked) {
-    await postLikes.findOneAndDelete({ post: postId, user: userId });
+    await likeComment.findOneAndDelete({ comment: commentId, user: userId });
   } else {
-    await postLikes.create({ post: postId, user: userId });
+    await likeComment.create({ comment: commentId, user: userId });
   }
-  const likes = (await postLikes.find({ post: postId })).length;
-  res.status(StatusCodes.OK).json({ postLikesCount: likes });
+  const likes = (await likeComment.find({ comment: commentId })).length;
+  res.status(StatusCodes.OK).json({ commentLikesCount: likes });
 };
