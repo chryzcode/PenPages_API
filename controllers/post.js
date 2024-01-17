@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
-import Post from "../models/post.js";
+import { Post, postLikes } from "../models/post.js";
 
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
@@ -51,10 +51,15 @@ export const deletePost = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-// export const likePost = async (req, res) => {
-//   const { postId } = req.params;
-//   const { userId } = req.user;
-//   req.body.likes = userId
-//   const post = Post.findOne({ _id: postId }, );
-//   res.status(StatusCodes.OK).json({post});
-// };
+export const likePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+  const liked = await postLikes.findOne({ post: postId, user: userId });
+  if (liked) {
+    await postLikes.findOneAndDelete({ post: postId, user: userId });
+  } else {
+    await postLikes.create({ post: postId, user: userId });
+  }
+  const postLikes = (await postLikes.find({ post: postId })).length;
+  res.status(StatusCodes.OK).json({ postLikesCount: postLikes });
+};

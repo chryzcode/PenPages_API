@@ -40,4 +40,19 @@ const postSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Post", postSchema);
+
+const postLikesSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "User field is required"],
+  },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post",
+    required: [true, "User field is required"],
+  },
+});
+
+export const postLikes = mongoose.model("postLikes", postLikesSchema);
+export const Post = mongoose.model("Post", postSchema);
