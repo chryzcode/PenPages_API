@@ -8,6 +8,7 @@ import {
   updateReplyComment,
   deleteComment,
   deleteReplyComment,
+  likePostComment,
 } from "../controllers/comment.js";
 import authenticateUser from "../middleware/authentication.js";
 
@@ -17,5 +18,6 @@ router.route("/:postId").post(authenticateUser, createComment).get(getPostAllCom
 router.route("/reply/:commentId").post(authenticateUser, createReplyComment).get(getPostAllReplyComments);
 router.route("/:commentId").put(authenticateUser, updateComment).delete(authenticateUser, deleteComment);
 router.route("/reply/:replyCommentId").put(authenticateUser, updateReplyComment).delete(authenticateUser, deleteReplyComment);
+router.route("/like/:commentId").post(authenticateUser, likePostComment);
 
 export default router;

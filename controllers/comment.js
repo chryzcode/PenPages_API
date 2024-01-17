@@ -80,7 +80,7 @@ export const deleteReplyComment = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-export const likeComment = async (req, res) => {
+export const likePostComment = async (req, res) => {
   const { commentId } = req.params;
   const { userId } = req.user;
   const liked = await likeComment.findOne({ comment: commentId, user: userId });
