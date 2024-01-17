@@ -14,4 +14,4 @@ const postLikesSchema = new mongoose.Schema({
 });
 
 
-export const Likes = mongoose.model("postLikes", postLikesSchema);
+export const postLikes = mongoose.model("postLikes", postLikesSchema);
