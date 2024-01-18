@@ -93,7 +93,7 @@ export const likePostComment = async (req, res) => {
   res.status(StatusCodes.OK).json({ commentLikesCount: likes });
 };
 
-export const likeReplyComment = async (req, res) => {
+export const likeAReplyComment = async (req, res) => {
   const { replyCommentId } = req.params;
   const { userId } = req.user;
   const liked = await likeReplyComment.findOne({ replyComment: replyCommentId, user: userId });
