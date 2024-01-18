@@ -1,29 +1,25 @@
 import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema(
-	{
-		user: {
-			type: mongoose.Schema.ObjectId,
-			ref: "User",
-			required: [true, "Post field is compulsory"],
-		},
-		post: {
-			type: mongoose.Schema.ObjectId,
-			ref: "Post",
-			required: [true, "Post field is compulsory"],
-		},
-		body: {
-			type: String,
-			required: [true, "Body field is compulsory"],
-		},
-		likes: {
-			type: Number,
-			default: 0,
-		},
-	},
-	{
-		timestamps: true,
-	}
+  {
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: [true, "Post field is compulsory"],
+    },
+    post: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Post",
+      required: [true, "Post field is compulsory"],
+    },
+    body: {
+      type: String,
+      required: [true, "Body field is compulsory"],
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 const replyCommentSchema = new mongoose.Schema(
@@ -42,16 +38,11 @@ const replyCommentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Body field is compulsory"],
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,
   }
 );
-
 
 const likeCommentSchema = new mongoose.Schema({
   user: {
@@ -64,6 +55,15 @@ const likeCommentSchema = new mongoose.Schema({
     ref: "Comment",
     required: [true, "Comment field is required"],
   },
+});
+
+export const likeReplyCommentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "User field is required"],
+  },
+  reply,
 });
 
 export const Comment = mongoose.model("Comment", commentSchema);
