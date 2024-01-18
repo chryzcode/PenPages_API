@@ -63,9 +63,14 @@ export const likeReplyCommentSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "User field is required"],
   },
-  reply,
+  replyComment: {
+    type: mongoose.Schema.Types.ObjectId,
+    reF: "replyComment",
+    required: [true, "Reply comment filed is required"],
+  },
 });
 
+export const likeReplyComment = mongoose.model("likeReplyCommentSchema", likeReplyComment);
 export const Comment = mongoose.model("Comment", commentSchema);
 export const replyComment = mongoose.model("replyComment", replyCommentSchema);
 export const likeComment = mongoose.model("likeComment", likeCommentSchema);
