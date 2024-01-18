@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { Comment, replyComment, likeComment } from "../models/comment.js";
+import { Comment, replyComment, likeComment, likeReplyComment } from "../models/comment.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 
 export const createComment = async (req, res) => {
@@ -91,4 +91,17 @@ export const likePostComment = async (req, res) => {
   }
   const likes = (await likeComment.find({ comment: commentId })).length;
   res.status(StatusCodes.OK).json({ commentLikesCount: likes });
+};
+
+export const likeReplyComment = async (req, res) => {
+  const { replyCommentId } = req.params;
+  const { userId } = req.user;
+  const liked = await likeReplyComment.findOne({ replyComment: replyCommentId, user: userId });
+  if (liked) {
+    await likeReplyComment.findOneAndDelete({ replyComment: replyCommentId, user: userId });
+  } else {
+    await likeReplyComment.create({ replyComment: replyCommentId, user: userId });
+  }
+  const likes = (await likeReplyComment.find({ replyComment: replyCommentId })).length;
+  res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
 };
