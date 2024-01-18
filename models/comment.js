@@ -70,7 +70,7 @@ export const likeReplyCommentSchema = new mongoose.Schema({
   },
 });
 
-export const likeReplyComment = mongoose.model("likeReplyCommentSchema", likeReplyComment);
+export const likeReplyComment = mongoose.model("likeReplyComment", likeReplyCommentSchema);
 export const Comment = mongoose.model("Comment", commentSchema);
 export const replyComment = mongoose.model("replyComment", replyCommentSchema);
 export const likeComment = mongoose.model("likeComment", likeCommentSchema);
