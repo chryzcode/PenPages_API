@@ -23,6 +23,6 @@ router
   .put(authenticateUser, updateReplyComment)
   .delete(authenticateUser, deleteReplyComment);
 router.route("/like/:commentId").post(authenticateUser, likePostComment);
-router.route("/like/:replyCommentId").post(authenticateUser, likeAReplyComment);
+router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment);
 
 export default router;
