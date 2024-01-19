@@ -58,9 +58,7 @@ export const deleteUser = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  const {
-    req: { user },
-  } = "";
+  req.user = ''
   console.log(req.user)
   res.status(StatusCodes.OK).send();
 };
