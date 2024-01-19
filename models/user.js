@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
 const userSchema = new mongoose.Schema(
   {
@@ -66,31 +66,36 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide password"],
       minlength: 6,
     },
+    token: {
+      type: String,
+    },
   },
+
   {
     timestamps: true,
   }
 );
 
 userSchema.pre("save", async function () {
-	const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  
 });
 
 userSchema.methods.createJWT = function () {
-	return jwt.sign(
-		{ userId: this._id, firstName: this.firstName, lastName: this.lastName },
-		process.env.JWT_SECRET,
-		{
-			expiresIn: process.env.JWT_LIFETIME,
-		}
-	);
+  const token = jwt.sign(
+    { userId: this._id, firstName: this.firstName, lastName: this.lastName },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
+  this.token = token;
+  return token;
 };
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
-	const isMatch = await bcrypt.compare(candidatePassword, this.password);
-	return isMatch;
+  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  return isMatch;
 };
 
 export default mongoose.model("User", userSchema);

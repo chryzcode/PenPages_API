@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import User from "../models/user.js";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
@@ -22,6 +23,7 @@ export const login = async (req, res) => {
     throw new UnauthenticatedError("Invalid password");
   }
   const token = user.createJWT();
+  await user.findOneAndUpdate({ token: token });
   res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
 };
 
@@ -58,7 +60,8 @@ export const deleteUser = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  req.user = ''
-  console.log(req.user)
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(" ")[1];
+  const payload = jwt.sign(token, "-10s");
   res.status(StatusCodes.OK).send();
 };
