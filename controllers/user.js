@@ -24,7 +24,7 @@ export const login = async (req, res) => {
   }
   var token = user.createJWT();
   await User.findOneAndUpdate({ token: token });
-  token = user.token
+  token = user.token;
   res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
 };
 
@@ -63,6 +63,6 @@ export const deleteUser = async (req, res) => {
 export const logout = async (req, res) => {
   const { userId } = req.user;
   req.body.token = "";
-  const user = await User.findOneAndUpdate({ _id: userId }, req.body);
+  await User.findOneAndUpdate({ _id: userId }, req.body);
   res.status(StatusCodes.OK).send();
 };
