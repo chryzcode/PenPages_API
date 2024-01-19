@@ -35,19 +35,18 @@ export const getUser = async (req, res) => {
   const user = await User.findOne({ username: username });
   if (!user) {
     throw new NotFoundError(`User with username ${username} does not exist`);
-	}
-	res.status(StatusCodes.OK).json({user})
+  }
+  res.status(StatusCodes.OK).json({ user });
 };
 
 export const updateUser = async (req, res) => {
-  const { userId } = req.user
-  const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true })
+  const { userId } = req.user;
+  const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  res.status(StatusCodes.OK).json({user})
-}
-
+  res.status(StatusCodes.OK).json({ user });
+};
 
 export const deleteUser = async (req, res) => {
   const { userId } = req.user;
@@ -55,5 +54,13 @@ export const deleteUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
+  res.status(StatusCodes.OK).send();
+};
+
+export const logout = async (req, res) => {
+  const {
+    req: { user },
+  } = "";
+  console.log(req.user)
   res.status(StatusCodes.OK).send();
 };
