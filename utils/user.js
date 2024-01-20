@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
 
- export default  transporter = nodemailer.createTransport({
+ const transporter = nodemailer.createTransport({
   port: 465, // true for 465, false for other ports
   host: "smtp.gmail.com",
   auth: {
@@ -11,4 +11,5 @@ import "dotenv/config";
   secure: true,
 });
 
+export default transporter
 
