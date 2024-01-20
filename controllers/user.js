@@ -79,8 +79,8 @@ export const forgotPassword = async (req, res) => {
   }
   const maildata = {
     from: process.env.Email_User,
-    to: "chryzalaba2003@gmail.com",
-    subject: "Sending Email using Node.js",
+    to:  user.email,
+    subject: `${user.email} Forget your password`,
     text: "That was easy!",
     html: "<b>Hey there! </b> <br> This is our first message sent with Nodemailer<br/>",
   };
