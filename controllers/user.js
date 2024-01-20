@@ -67,12 +67,13 @@ export const logout = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body 
+  const { email } = req.body;
   if (!email) {
-    throw new  BadRequestError('Email field is required')
+    throw new BadRequestError("Email field is required");
   }
-  const user = User.findOne({ email: email })
+  const user = User.findOne({ email: email });
   if (!user) {
-    
+    throw new NotFoundError("User does not exists");
   }
-}
+  res.status(StatusCodes.OK).send();
+};
