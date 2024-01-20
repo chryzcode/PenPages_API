@@ -12,5 +12,6 @@ router.route("/:username").get(getUser);
 router.route("/auth/logout").post(authenticateUser, logout);
 router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
+router.route("/forgot-password").put(authenticateUser, deleteUser);
 
 export default router;
