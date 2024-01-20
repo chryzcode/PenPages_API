@@ -65,3 +65,14 @@ export const logout = async (req, res) => {
   await User.findOneAndUpdate({ _id: userId }, req.body);
   res.status(StatusCodes.OK).send();
 };
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body 
+  if (!email) {
+    throw new  BadRequestError('Email field is required')
+  }
+  const user = User.findOne({ email: email })
+  if (!user) {
+    
+  }
+}
