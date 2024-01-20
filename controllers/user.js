@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import User from "../models/user.js";
+import transporter from '../utils/user.js'
 
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
@@ -76,7 +77,7 @@ export const forgotPassword = async (req, res) => {
     throw new NotFoundError("User does not exists");
   }
   const maildata = {
-    from: 'chryzalaba200#@gmail.com',
+    from: ,
     to:
   }
   res.status(StatusCodes.OK).send();
