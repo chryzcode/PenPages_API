@@ -80,6 +80,14 @@ export const forgotPassword = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: "chryzalaba2003@gmail.com",
+    subject: "Sending Email using Node.js",
+    text: "That was easy!",
+    html: "<b>Hey there! </b> <br> This is our first message sent with Nodemailer<br/>",
   };
-  res.status(StatusCodes.OK).send();
+  transporter.sendMail(maildata, (error, info) => {
+    if (error) {
+      return console.log(error);
+    }
+    res.status(StatusCodes.OK).send();
+  });
 };
