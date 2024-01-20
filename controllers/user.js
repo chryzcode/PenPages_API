@@ -71,9 +71,13 @@ export const forgotPassword = async (req, res) => {
   if (!email) {
     throw new BadRequestError("Email field is required");
   }
-  const user = User.findOne({ email: email });
+  const user = await User.findOne({ email: email });
   if (!user) {
     throw new NotFoundError("User does not exists");
+  }
+  const maildata = {
+    from: 'chryzalaba200#@gmail.com',
+    to:
   }
   res.status(StatusCodes.OK).send();
 };
