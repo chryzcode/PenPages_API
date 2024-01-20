@@ -1,5 +1,14 @@
 import express from "express";
-import { getAllUsers, login, register, getUser, updateUser, deleteUser, logout, forgotPassword } from "../controllers/user.js";
+import {
+  getAllUsers,
+  login,
+  register,
+  getUser,
+  updateUser,
+  deleteUser,
+  logout,
+  forgotPassword,
+} from "../controllers/user.js";
 
 import authenticateUser from "../middleware/authentication.js";
 
@@ -12,6 +21,6 @@ router.route("/:username").get(getUser);
 router.route("/auth/logout").post(authenticateUser, logout);
 router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
-router.route("/forgot-password").put(authenticateUser, forgotPassword);
+router.route("/forgot-password").post(forgotPassword);
 
 export default router;
