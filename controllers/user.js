@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 
 const uniqueID = uuidv4();
 
+const linkVerificationtoken = generateToken(uniqueID);
+
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
   const token = user.createJWT();
@@ -86,7 +88,7 @@ export const forgotPassword = async (req, res) => {
     subject: `${user.email} Forget your password`,
     text: "That was easy!",
     html: `<p>Please use the following <a href="http://yourdomain.com/verify?token=${encodeURIComponent(
-      token
+      linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
@@ -97,6 +99,4 @@ export const forgotPassword = async (req, res) => {
   });
 };
 
-export const verifytoken = async (req, res) => {
-  console.log(req.url);
-};
+
