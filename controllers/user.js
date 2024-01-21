@@ -2,7 +2,10 @@ import "dotenv/config";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import User from "../models/user.js";
-import transporter from "../utils/user.js";
+import { transporter, generateToken } from "../utils/user.js";
+import { v4 as uuidv4 } from "uuid";
+
+const uniqueID = uuidv4();
 
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
@@ -82,7 +85,9 @@ export const forgotPassword = async (req, res) => {
     to: user.email,
     subject: `${user.email} Forget your password`,
     text: "That was easy!",
-    html: "< b > Hey there! </> <br> This is our first message sent with Nodemailer<br /> ",
+    html: `<p>Please use the following <a href="http://yourdomain.com/verify?token=${encodeURIComponent(
+      token
+    )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -93,5 +98,5 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const verifytoken = async (req, res) => {
-  console.log(req.url)
-}
+  console.log(req.url);
+};
