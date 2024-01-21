@@ -74,19 +74,7 @@ export const logout = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-const verifytoken = (req, res) => {
-  const token = req.query.linkVerificationtoken;
-  const secretKey = process.env.JWT_SECRET;
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    console.log("Token verified:", decoded);
-    // Proceed with user email verification logic
-    res.send("Email verified successfully!");
-  } catch (error) {
-    console.error("Token verification failed:", error);
-    res.status(400).send("Invalid or expired token");
-  }
-};
+
 
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -114,16 +102,16 @@ export const forgotPassword = async (req, res) => {
   });
 };
 
-export const verifyToken = (req, res) => {
-    const token = req.query.token;
-    const secretKey = 'your_secret_key';
-    try {
-        const decoded = jwt.verify(token, secretKey);
-        console.log('Token verified:', decoded);
-        // Proceed with user email verification logic
-        res.send('Email verified successfully!');
-    } catch (error) {
-        console.error('Token verification failed:', error);
-        res.status(400).send('Invalid or expired token');
-    }
-}
+export const verifytoken = (req, res) => {
+  const token = req.query.linkVerificationtoken;
+  const secretKey = process.env.JWT_SECRET;
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    console.log("Token verified:", decoded);
+    // Proceed with user email verification logic
+    res.send("Email verified successfully!");
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    res.status(400).send("Invalid or expired token");
+  }
+};
