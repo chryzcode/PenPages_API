@@ -9,7 +9,13 @@ import "dotenv/config";
     pass: process.env.Email_Password,
   },
   secure: true,
-});
+ });
+
+
+const generateToken =  () => {
+  const expiry = '10m',
+  const secret_key = process.env.JWT_SECRET
+ }
 
 
 export default transporter
