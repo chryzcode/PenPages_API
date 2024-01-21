@@ -77,9 +77,18 @@ export const forgotPassword = async (req, res) => {
   if (!user) {
     throw new NotFoundError("User does not exists");
   }
+
+  const link_token = jwt.sign(
+    { userId: this._id, firstName: this.firstName, lastName: this.lastName },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_LIFETIME,
+    }
+  );
+  
   const maildata = {
     from: process.env.Email_User,
-    to:  user.email,
+    to: user.email,
     subject: `${user.email} Forget your password`,
     text: "That was easy!",
     html: "<b>Hey there! </b> <br> This is our first message sent with Nodemailer<br/>",
