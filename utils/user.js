@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
+import { v4 as uuidv4 } from "uuid";
 
 const transporter = nodemailer.createTransport({
   port: 465, // true for 465, false for other ports
@@ -11,7 +12,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
 });
 
-const generateToken = (email) => {
+const generateToken = email => {
   const expiry = "10m";
   const secret_key = process.env.JWT_SECRET;
   return jwt.sign({ id: uniqueID }, secret_key, { expiresIn: expiry });
