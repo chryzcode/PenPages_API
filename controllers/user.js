@@ -76,7 +76,7 @@ export const logout = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
-export const forgotPassword = async (req, res) => {
+export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     throw new BadRequestError("Email field is required");
@@ -92,7 +92,7 @@ export const forgotPassword = async (req, res) => {
     text: "That was easy!",
     html: `<p>Please use the following <a href="${domain}/auth/verify/?email=${email}/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
+    )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -109,7 +109,6 @@ export const verifyForgotPasswordToken = async (req, res) => {
   var { password } = req.body;
   try {
     const decoded = jwt.verify(token, secretKey);
-    console.log("Token verified:", decoded);
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
     const user = await User.findOneAndUpdate({ email: email }, password, { runValidators: true, new: true });

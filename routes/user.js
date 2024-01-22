@@ -7,7 +7,7 @@ import {
   updateUser,
   deleteUser,
   logout,
-  forgotPassword,
+  sendForgotPasswordLink,
   verifyForgotPasswordToken,
 } from "../controllers/user.js";
 
@@ -22,7 +22,7 @@ router.route("/:username").get(getUser);
 router.route("/auth/logout").post(authenticateUser, logout);
 router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
-router.route("/forgot-password").post(forgotPassword);
-router.route("/auth/verify/:email/:token").post(verifyForgotPasswordToken);
+router.route("/send-forgot-password-link").post(sendForgotPasswordLink);
+router.route("/auth/change-password/:email/:token").post(verifyForgotPasswordToken);
 
 export default router;
