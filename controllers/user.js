@@ -107,11 +107,14 @@ export const verifyToken = async (req, res) => {
   const token = req.query.linkVerificationtoken;
   const email = req.query.email
   const secretKey = process.env.JWT_SECRET;
-  const {password} = req.body
+  var { password } = req.body
+  console.log(password)
   try {
     const decoded = jwt.verify(token, secretKey);
     console.log("Token verified:", decoded);
-    const user = await User.findOneAndUpdate({email:email})
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(this.password, salt);
+    const user = await User.findOneAndUpdate({email:email}, password, )
     res.send("Email verified successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
