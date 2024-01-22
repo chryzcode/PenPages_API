@@ -90,14 +90,13 @@ export const forgotPassword = async (req, res) => {
     to: user.email,
     subject: `${(user.firstName, user.lastName)} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify?email=${encodeURIComponent(
-      email
-    )}/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> to verify your email. Link expires in 1 hour.</p>`,
+    html: `<p>Please use the following <a href="${domain}/auth/verify/?email=${email}/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
-      return console.log(error);
+      res.status(StatusCodes.BAD_REQUEST).send();
     }
+    console.log(linkVerificationtoken);
     res.status(StatusCodes.OK).send();
   });
 };
@@ -114,9 +113,9 @@ export const verifyToken = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(this.password, salt);
     const user = await User.findOneAndUpdate({ email: email }, password, { runValidators: true, new: true });
-    res.send("Email verified successfully!");
+    res.send("Password changed successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
-    res.status(400).send("Invalid or expired token");
+    res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
   }
 };
