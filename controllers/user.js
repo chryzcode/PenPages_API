@@ -89,7 +89,9 @@ export const forgotPassword = async (req, res) => {
     to: user.email,
     subject: `${user.firstName, user.lastName} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify?email=${user.email}/?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify?email=${encodeURIComponent(
+      email
+    )}/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
@@ -103,14 +105,18 @@ export const forgotPassword = async (req, res) => {
 
 export const verifyToken = async (req, res) => {
   const token = req.query.linkVerificationtoken;
+  const email = req.query.email
   const secretKey = process.env.JWT_SECRET;
+  const {password} = req.body
   try {
     const decoded = jwt.verify(token, secretKey);
     console.log("Token verified:", decoded);
-    const user = await User.findOne{}
+    const user = await User.findOneAndUpdate({email:email})
     res.send("Email verified successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(400).send("Invalid or expired token");
   }
 };
+
+
