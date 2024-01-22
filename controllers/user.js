@@ -87,9 +87,9 @@ export const forgotPassword = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: user.email,
-    subject: `${user.email} Forget your password`,
+    subject: `${user.firstName, user.lastName} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify?email=${user.email}/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
@@ -101,13 +101,13 @@ export const forgotPassword = async (req, res) => {
   });
 };
 
-export const verifyToken = (req, res) => {
+export const verifyToken = async (req, res) => {
   const token = req.query.linkVerificationtoken;
   const secretKey = process.env.JWT_SECRET;
   try {
     const decoded = jwt.verify(token, secretKey);
     console.log("Token verified:", decoded);
-    // Proceed with user email verification logic
+    const user = await User.findOne{}
     res.send("Email verified successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
