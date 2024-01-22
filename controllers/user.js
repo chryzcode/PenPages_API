@@ -7,6 +7,7 @@ import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 
 const uniqueID = uuidv4();
+const doamin = process.env.DOMAIN || "http://127.0.0.1:8000/"
 
 const linkVerificationtoken = generateToken(uniqueID);
 
@@ -90,7 +91,7 @@ export const forgotPassword = async (req, res) => {
     to: user.email,
     subject: `${user.email} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="http://yourdomain.com/verify?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="verify?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };

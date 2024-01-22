@@ -23,4 +23,5 @@ router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
 router.route("/forgot-password").post(forgotPassword);
 
+
 export default router;
