@@ -8,7 +8,7 @@ import {
   deleteUser,
   logout,
   forgotPassword,
-  verifyToken,
+  verifyForgotPasswordToken,
 } from "../controllers/user.js";
 
 import authenticateUser from "../middleware/authentication.js";
@@ -23,6 +23,6 @@ router.route("/auth/logout").post(authenticateUser, logout);
 router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
 router.route("/forgot-password").post(forgotPassword);
-router.route("/auth/verify/:email/:token").post(verifyToken);
+router.route("/auth/verify/:email/:token").post(verifyForgotPasswordToken);
 
 export default router;

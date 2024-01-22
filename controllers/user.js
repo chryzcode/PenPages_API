@@ -90,7 +90,9 @@ export const forgotPassword = async (req, res) => {
     to: user.email,
     subject: `${(user.firstName, user.lastName)} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify/?email=${email}/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> to verify your email. Link expires in 1 hour.</p>`,
+    html: `<p>Please use the following <a href="${domain}/auth/verify/?email=${email}/?token=${encodeURIComponent(
+      linkVerificationtoken
+    )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -100,15 +102,13 @@ export const forgotPassword = async (req, res) => {
   });
 };
 
-export const verifyToken = async (req, res) => {
-  console.log(req.params.token)
-  const token = req.query.linkVerificationtoken;
-  const email = req.query.email;
+export const verifyForgotPasswordToken = async (req, res) => {
+  const token = req.params.token;
+  const email = req.params.email;
   const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
-  console.log(password);
   try {
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, secretKey);
     console.log("Token verified:", decoded);
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
