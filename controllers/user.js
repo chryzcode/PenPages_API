@@ -96,22 +96,22 @@ export const forgotPassword = async (req, res) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
     }
-    console.log(linkVerificationtoken);
     res.status(StatusCodes.OK).send();
   });
 };
 
 export const verifyToken = async (req, res) => {
+  console.log(req.params.token)
   const token = req.query.linkVerificationtoken;
   const email = req.query.email;
   const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
   console.log(password);
   try {
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
     console.log("Token verified:", decoded);
     const salt = await bcrypt.genSalt(10);
-    password = await bcrypt.hash(this.password, salt);
+    password = await bcrypt.hash(password, salt);
     const user = await User.findOneAndUpdate({ email: email }, password, { runValidators: true, new: true });
     res.send("Password changed successfully!");
   } catch (error) {
