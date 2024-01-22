@@ -1,5 +1,6 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import User from "../models/user.js";
@@ -87,13 +88,11 @@ export const forgotPassword = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: user.email,
-    subject: `${user.firstName, user.lastName} Forget your password`,
+    subject: `${(user.firstName, user.lastName)} Forget your password`,
     text: "That was easy!",
     html: `<p>Please use the following <a href="${domain}/auth/verify?email=${encodeURIComponent(
       email
-    )}/?token=${encodeURIComponent(
-      linkVerificationtoken
-    )}">link</a> to verify your email. Link expires in 1 hour.</p>`,
+    )}/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> to verify your email. Link expires in 1 hour.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -105,21 +104,19 @@ export const forgotPassword = async (req, res) => {
 
 export const verifyToken = async (req, res) => {
   const token = req.query.linkVerificationtoken;
-  const email = req.query.email
+  const email = req.query.email;
   const secretKey = process.env.JWT_SECRET;
-  var { password } = req.body
-  console.log(password)
+  var { password } = req.body;
+  console.log(password);
   try {
     const decoded = jwt.verify(token, secretKey);
     console.log("Token verified:", decoded);
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(this.password, salt);
-    const user = await User.findOneAndUpdate({email:email}, password, )
+    const user = await User.findOneAndUpdate({ email: email }, password, { runValidators: true, new: true });
     res.send("Email verified successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(400).send("Invalid or expired token");
   }
 };
-
-
