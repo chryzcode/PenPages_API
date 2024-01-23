@@ -88,7 +88,7 @@ export const sendForgotPasswordLink = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: user.email,
-    subject: `${user.lastName} Forget your password`,
+    subject: `${user.firstName} you forgot your password`,
     text: "That was easy!",
     html: `<p>Please use the following <a href="${domain}/auth/verify/?userId=${user.id}/?token=${encodeURIComponent(
       linkVerificationtoken
@@ -112,7 +112,8 @@ export const verifyForgotPasswordToken = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
     const user = await User.findOneAndUpdate({ _id: userId }, password, { runValidators: true, new: true });
-    res.send("Password changed successfully!");
+
+    res.status(StatusCodes.OK).json({ user });
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
