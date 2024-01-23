@@ -94,7 +94,6 @@ export const sendForgotPasswordLink = async (req, res) => {
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
   };
-  console.log(linkVerificationtoken);
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
