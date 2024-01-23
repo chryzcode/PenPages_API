@@ -108,10 +108,10 @@ export const verifyForgotPasswordToken = async (req, res) => {
   const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
   try {
-    const decoded = jwt.verify(token, secretKey);
+    jwt.verify(token, secretKey);
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
-    const user = await User.findOneAndUpdate({ email: email }, password, { runValidators: true, new: true });
+    const user = await User.findOneAndUpdate({ _id: email }, userId, { runValidators: true, new: true });
     res.send("Password changed successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
