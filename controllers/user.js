@@ -90,7 +90,7 @@ export const sendForgotPasswordLink = async (req, res) => {
     to: user.email,
     subject: `${user.lastName} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify/?id=${user.id}/?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify/?userId=${user.id}/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
   };
@@ -104,14 +104,14 @@ export const sendForgotPasswordLink = async (req, res) => {
 
 export const verifyForgotPasswordToken = async (req, res) => {
   const token = req.params.token;
-  const userId = req.params.id;
+  const userId = req.params.userId;
   const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
   try {
     jwt.verify(token, secretKey);
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
-    const user = await User.findOneAndUpdate({ _id: email }, userId, { runValidators: true, new: true });
+    const user = await User.findOneAndUpdate({ _id: userId }, password, { runValidators: true, new: true });
     res.send("Password changed successfully!");
   } catch (error) {
     console.error("Token verification failed:", error);
