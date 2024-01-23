@@ -94,6 +94,7 @@ export const sendForgotPasswordLink = async (req, res) => {
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
   };
+  console.log(linkVerificationtoken);
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
@@ -110,9 +111,10 @@ export const verifyForgotPasswordToken = async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const salt = await bcrypt.genSalt(10);
-    password = await bcrypt.hash(password, salt);
-    const user = await User.findOneAndUpdate({ _id: userId }, password, { runValidators: true, new: true });
-
+    console.log(password);
+    // password = await bcrypt.hash(password, salt);
+    // console.log(password);
+    const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
     res.status(StatusCodes.OK).json({ user });
   } catch (error) {
     console.error("Token verification failed:", error);
