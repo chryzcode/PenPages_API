@@ -114,7 +114,11 @@ export const verifyForgotPasswordToken = async (req, res) => {
     console.log(password);
     password = await bcrypt.hash(password, salt);
     console.log(password);
-    const user = await User.findOneAndUpdate({ _id: userId }, {password:password}, { runValidators: true, new: true });
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { password: password, token: token },
+      { runValidators: true, new: true }
+    );
 
     res.status(StatusCodes.OK).json({ user });
   } catch (error) {
