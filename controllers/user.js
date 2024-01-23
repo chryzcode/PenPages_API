@@ -88,9 +88,9 @@ export const sendForgotPasswordLink = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: user.email,
-    subject: `${(user.firstName, user.lastName)} Forget your password`,
+    subject: `${user.lastName} Forget your password`,
     text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify/?email=${email}/?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify/?id=${user.id}/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
   };
@@ -104,7 +104,7 @@ export const sendForgotPasswordLink = async (req, res) => {
 
 export const verifyForgotPasswordToken = async (req, res) => {
   const token = req.params.token;
-  const email = req.params.email;
+  const userId = req.params.id;
   const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
   try {
