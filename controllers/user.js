@@ -19,7 +19,9 @@ export const register = async (req, res) => {
     to: user.email,
     subject: `${user.firstName} verify your account`,
     // text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${user.id}/?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
+      user.id
+    }/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
   };
@@ -56,6 +58,10 @@ export const login = async (req, res) => {
   if (!user) {
     throw new UnauthenticatedError("User does not exist");
   }
+  if (user.verified == false) {
+    throw new UnauthenticatedError("Account is not verified");
+  }
+
   const passwordMatch = await user.comparePassword(password);
   if (!passwordMatch) {
     throw new UnauthenticatedError("Invalid password");
