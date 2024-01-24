@@ -17,19 +17,19 @@ export const register = async (req, res) => {
   const maildata = {
     from: process.env.Email_User,
     to: user.email,
-    subject: `${user.firstName} you forgot your password`,
-    text: "That was easy!",
+    subject: `${user.firstName} verify your account`,
+    // text: "That was easy!",
     html: `<p>Please use the following <a href="${domain}/auth/verify/?userId=${user.id}/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
+    )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
     }
     res.status(StatusCodes.OK).send();
-  });+
-  const token = user.createJWT();
+  });
+  // const token = user.createJWT();
   res.status(StatusCodes.CREATED).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
 };
 
@@ -104,10 +104,10 @@ export const sendForgotPasswordLink = async (req, res) => {
     from: process.env.Email_User,
     to: user.email,
     subject: `${user.firstName} you forgot your password`,
-    text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify/?userId=${user.id}/?token=${encodeURIComponent(
-      linkVerificationtoken
-    )}">link</a> to verify your email. Link expires in 30 mins.</p>`,
+    // text: "That was easy!",
+    html: `<p>Please use the following <a href="${domain}/verify/forgot-password/?userId=${
+      user.id
+    }/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
