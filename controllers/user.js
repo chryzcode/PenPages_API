@@ -37,6 +37,14 @@ export const verifyAccount = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
   const secretKey = process.env.JWT_SECRET;
+  try {
+    jwt.verify(token, secretKey);
+    const user = User.findByIdAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
+    res.status(StatusCodes.OK).json({ success: "account verified successfully" });
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
+  }
 };
 
 export const login = async (req, res) => {
@@ -119,7 +127,7 @@ export const sendForgotPasswordLink = async (req, res) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
     }
-    res.status(StatusCodes.OK).send();
+    res.status(StatusCodes.OK).send("Check you email to change your password");
   });
 };
 
@@ -131,9 +139,7 @@ export const verifyForgotPasswordToken = async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const salt = await bcrypt.genSalt(10);
-    console.log(password);
     password = await bcrypt.hash(password, salt);
-    console.log(password);
     const user = await User.findOneAndUpdate(
       { _id: userId },
       { password: password, token: token },
