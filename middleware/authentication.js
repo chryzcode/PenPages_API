@@ -9,7 +9,7 @@ export default async (req, res, next) => {
     throw new UnauthenticatedError("Authentication invalid");
   }
   const token = authHeader.split(" ")[1];
-  const user = await User.findOne({ token: token });
+  const user = await User.findOne({ token: token, verified: true });
   if (user) {
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
