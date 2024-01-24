@@ -29,8 +29,14 @@ export const register = async (req, res) => {
     }
     res.status(StatusCodes.OK).send();
   });
-  // const token = user.createJWT();
+  const token = user.createJWT();
   res.status(StatusCodes.CREATED).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
+};
+
+export const verifyAccount = async (req, res) => {
+  const token = req.params.token;
+  const userId = req.params.userId;
+  const secretKey = process.env.JWT_SECRET;
 };
 
 export const login = async (req, res) => {
