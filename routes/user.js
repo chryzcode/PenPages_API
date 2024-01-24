@@ -9,6 +9,7 @@ import {
   logout,
   sendForgotPasswordLink,
   verifyForgotPasswordToken,
+  verifyAccount,
 } from "../controllers/user.js";
 
 import authenticateUser from "../middleware/authentication.js";
@@ -24,5 +25,6 @@ router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").put(authenticateUser, deleteUser);
 router.route("/send-forgot-password-link").post(sendForgotPasswordLink);
 router.route("/auth/forgot-password/:userId/:token").post(verifyForgotPasswordToken);
+router.route("/auth/verify-account/:userId/:token").post(verifyAccount);
 
 export default router;

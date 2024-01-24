@@ -19,7 +19,7 @@ export const register = async (req, res) => {
     to: user.email,
     subject: `${user.firstName} verify your account`,
     // text: "That was easy!",
-    html: `<p>Please use the following <a href="${domain}/auth/verify/?userId=${user.id}/?token=${encodeURIComponent(
+    html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${user.id}/?token=${encodeURIComponent(
       linkVerificationtoken
     )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
   };
