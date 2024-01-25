@@ -58,6 +58,22 @@ export const login = async (req, res) => {
     throw new UnauthenticatedError("User does not exist");
   }
   if (user.verified == false) {
+    const maildata = {
+      from: process.env.Email_User,
+      to: user.email,
+      subject: `${user.firstName} verify your account`,
+      html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
+        user.id
+      }/?token=${encodeURIComponent(
+        linkVerificationtoken
+      )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
+    };
+    transporter.sendMail(maildata, (error, info) => {
+      if (error) {
+        res.status(StatusCodes.BAD_REQUEST).send();
+      }
+      res.status(StatusCodes.OK).send();
+    });
     throw new UnauthenticatedError("Account is not verified, kindly check your mail for verfication");
   }
 
