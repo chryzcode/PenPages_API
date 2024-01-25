@@ -31,7 +31,11 @@ export const register = async (req, res) => {
     res.status(StatusCodes.OK).send();
   });
   const token = user.createJWT();
-  res.status(StatusCodes.CREATED).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
+  res.status(StatusCodes.CREATED).json({
+    user: { firstName: user.firstName, lastName: user.lastName },
+    token,
+    msg: "check your mail for account verification",
+  });
 };
 
 export const verifyAccount = async (req, res) => {
