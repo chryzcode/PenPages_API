@@ -40,9 +40,8 @@ export const verifyAccount = async (req, res) => {
   const secretKey = process.env.JWT_SECRET;
   try {
     jwt.verify(token, secretKey);
-    const user = User.findByIdAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
-    user.createJWT();
-    res.status(StatusCodes.OK).json({ success: "account verified successfully" });
+    const user = User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
+    res.status(StatusCodes.OK).send();
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
