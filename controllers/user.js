@@ -22,7 +22,7 @@ export const register = async (req, res) => {
       user.id
     }/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
+    )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -72,7 +72,7 @@ export const login = async (req, res) => {
         user.id
       }/?token=${encodeURIComponent(
         linkVerificationtoken
-      )}">link</a> to verify your account. Link expires in 30 mins.</p>`,
+      )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
     };
     transporter.sendMail(maildata, (error, info) => {
       if (error) {
