@@ -58,7 +58,7 @@ export const login = async (req, res) => {
     throw new UnauthenticatedError("User does not exist");
   }
   if (user.verified == false) {
-    throw new UnauthenticatedError("Account is not verified");
+    throw new UnauthenticatedError("Account is not verified, kindly check your mail for verfication");
   }
 
   const passwordMatch = await user.comparePassword(password);
