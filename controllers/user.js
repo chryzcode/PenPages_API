@@ -57,6 +57,11 @@ export const login = async (req, res) => {
   if (!user) {
     throw new UnauthenticatedError("User does not exist");
   }
+
+  const passwordMatch = await user.comparePassword(password);
+  if (!passwordMatch) {
+    throw new UnauthenticatedError("Invalid password");
+  }
   if (user.verified == false) {
     const maildata = {
       from: process.env.Email_User,
@@ -75,11 +80,6 @@ export const login = async (req, res) => {
       res.status(StatusCodes.OK).send();
     });
     throw new UnauthenticatedError("Account is not verified, kindly check your mail for verfication");
-  }
-
-  const passwordMatch = await user.comparePassword(password);
-  if (!passwordMatch) {
-    throw new UnauthenticatedError("Invalid password");
   }
   var token = user.createJWT();
   await User.findOneAndUpdate({ token: token });
