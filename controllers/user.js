@@ -42,6 +42,7 @@ export const verifyAccount = async (req, res) => {
     jwt.verify(token, secretKey);
     const user = User.findByIdAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
     res.status(StatusCodes.OK).json({ success: "account verified successfully" });
+    const token = user.createJWT();
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
