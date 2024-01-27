@@ -116,11 +116,11 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const { userId } = req.user;
-  const user = await User.findOneAndDelete({ _id: userId });
+  const user = await User.findOneAndUpdate({ _id: userId }, { verified: false }, { new: true, runValidators: true });
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  res.status(StatusCodes.OK).send();
+  res.status(StatusCodes.OK).send("Your account has been disabled");
 };
 
 export const logout = async (req, res) => {
