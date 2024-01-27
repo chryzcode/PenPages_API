@@ -18,6 +18,7 @@ export const register = async (req, res) => {
     from: process.env.Email_User,
     to: user.email,
     subject: `${user.firstName} verify your account`,
+    text: "Hi boss how far",
     html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
       user.id
     }/?token=${encodeURIComponent(
@@ -44,7 +45,7 @@ export const verifyAccount = async (req, res) => {
   const secretKey = process.env.JWT_SECRET;
   try {
     jwt.verify(token, secretKey);
-    const user = User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
+    const user = await User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
     res.status(StatusCodes.OK).send();
   } catch (error) {
     console.error("Token verification failed:", error);
@@ -71,6 +72,7 @@ export const login = async (req, res) => {
       from: process.env.Email_User,
       to: user.email,
       subject: `${user.firstName} verify your account`,
+      text: 'Hi boss how far',
       html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
         user.id
       }/?token=${encodeURIComponent(
