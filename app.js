@@ -20,11 +20,13 @@ import notFoundMiddleware from "./middleware/not-found.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.set('trust proxy', 1)
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000, //15 mins
-  max: 100, //limit each ip to 100 requests per windowsMs
-}));
+app.set("trust proxy", 1);
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, //15 mins
+    max: 100, //limit each ip to 100 requests per windowsMs
+  })
+);
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
