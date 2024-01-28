@@ -5,8 +5,9 @@
 	"main": "app.js",
 	"type": "module",
 	"scripts": {
-		"start": "node --watch app.js"
+		"start": "node app.js"
 	},
+	"_comment_dev_start": "node --watch app.js",
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
@@ -24,3 +25,4 @@
 		"uuid": "^9.0.1"
 	}
 }
+
