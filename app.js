@@ -20,10 +20,11 @@ import notFoundMiddleware from "./middleware/not-found.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(rateLimit());
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-app.use(rateLimit());
+//xss
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
