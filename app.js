@@ -3,11 +3,15 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 
+import helmet from "helmet";
+import cors from "cors";
+// import "xxs-clean"
+import rateLimit from "express-rate-limit";
+
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
 import authRouter from "./routes/user.js";
-
 
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";
@@ -17,6 +21,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(rateLimit());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
