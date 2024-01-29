@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 
 import helmet from "helmet";
 import cors from "cors";
-// import "xxs-clean"
 import rateLimit from "express-rate-limit";
 
 import commentRouter from "./routes/comment.js";
@@ -30,7 +29,6 @@ app.use(
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-//xss
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
