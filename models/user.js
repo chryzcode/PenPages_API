@@ -24,10 +24,10 @@ const userSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 25,
     },
-    // image: {
-    //   data: Buffer,
-    //   contentType: String,
-    // },
+    image: {
+      data: Buffer,
+      contentType: String,
+    },
     email: {
       type: String,
       required: [true, "Please provide email"],
