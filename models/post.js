@@ -11,6 +11,9 @@ const postSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    imageCloudinaryId: {
+      type: String,
+    },
     body: {
       type: String,
       required: [true, "Body field is compulsory"],
@@ -37,7 +40,6 @@ const postSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 const postLikesSchema = new mongoose.Schema({
   user: {

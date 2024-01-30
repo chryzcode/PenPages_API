@@ -43,10 +43,11 @@ export const updatePost = async (req, res) => {
     // Upload the image
     const result = await cloudinary.uploader.upload(imagePath, options);
     console.log(result);
-    return result.public_id;
+    console.log(result.public_id);
   } catch (error) {
     console.error(error);
   }
+  req.body.imageCloudinaryId = result.public_id;
   const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
     new: true,
     runValidators: true,
