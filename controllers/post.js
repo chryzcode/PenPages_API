@@ -38,8 +38,15 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
-  const imagePath = req.body.
-  const result = await cloudinary.uploader.upload(imagePath, options);
+  const imagePath = req.body.image;
+  try {
+    // Upload the image
+    const result = await cloudinary.uploader.upload(imagePath, options);
+    console.log(result);
+    return result.public_id;
+  } catch (error) {
+    console.error(error);
+  }
   const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
     new: true,
     runValidators: true,
