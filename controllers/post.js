@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
+import cloudinary from "cloudinary";
 
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
