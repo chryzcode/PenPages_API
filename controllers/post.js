@@ -3,6 +3,12 @@ import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
 
+const options = {
+  use_filename: true,
+  unique_filename: false,
+  overwrite: true,
+};
+
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const post = await Post.create({ ...req.body });
@@ -32,6 +38,8 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
+  const imagePath = req.body.
+  const result = await cloudinary.uploader.upload(imagePath, options);
   const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
     new: true,
     runValidators: true,
