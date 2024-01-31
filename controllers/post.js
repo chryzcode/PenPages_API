@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
-import path from "path"
+import path from "path";
 
 const options = {
   use_filename: true,
@@ -39,9 +39,11 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
-  const imagePath = req.body.image;
+  var imagePath = req.body.image;
   try {
     // Upload the image
+    imagePath = path.basename(req.body.image.path);
+    console.log(imagePath);
     const result = await cloudinary.uploader.upload(imagePath, options);
     console.log(result);
     console.log(result.public_id);
