@@ -51,6 +51,7 @@ export const updatePost = async (req, res) => {
     console.error(error);
   }
   req.body.imageCloudinaryId = result.public_id;
+  req.body.image = imagePath;
   const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
     new: true,
     runValidators: true,
