@@ -21,11 +21,11 @@ export const createPost = async (req, res) => {
     console.log(result);
     req.body.imageCloudinaryUrl = result.url;
     req.body.image = imagePath;
+    const post = await Post.create({ ...req.body });
+    res.status(StatusCodes.CREATED).json({ post });
   } catch (error) {
     console.error(error);
   }
-  const post = await Post.create({ ...req.body });
-  res.status(StatusCodes.CREATED).json({ post });
 };
 
 export const getAllPosts = async (req, res) => {
