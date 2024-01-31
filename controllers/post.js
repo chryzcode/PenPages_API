@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
+import path from "path"
 
 const options = {
   use_filename: true,
