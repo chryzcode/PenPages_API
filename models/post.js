@@ -10,10 +10,10 @@ const postSchema = new mongoose.Schema(
     },
     image: {
       type: String,
+      required: [true, "Image field is required"],
     },
-    imageCloudinaryId: {
+    imageCloudinaryUrl: {
       type: String,
-      required: [true, "Image field is required"]
     },
     body: {
       type: String,
