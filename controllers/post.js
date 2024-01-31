@@ -15,16 +15,16 @@ export const createPost = async (req, res) => {
   var imagePath = req.body.image;
   try {
     // Upload the image
-    imagePath = path.basename(req.body.image.path);
+    imagePath = path.basename(req.body.image);
     console.log(imagePath);
     const result = await cloudinary.uploader.upload(imagePath, options);
     console.log(result);
     console.log(result.public_id);
+    req.body.imageCloudinaryUrl = result.public_id;
+    req.body.image = imagePath;
   } catch (error) {
     console.error(error);
   }
-  req.body.imageCloudinaryId = result.public_id;
-  req.body.image = imagePath;
   const post = await Post.create({ ...req.body });
   res.status(StatusCodes.CREATED).json({ post });
 };
