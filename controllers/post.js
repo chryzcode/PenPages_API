@@ -12,13 +12,13 @@ const options = {
 
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
-  var imagePath = req.body.image;
+  const imagePath = req.body.image;
   console.log(imagePath);
   try {
-    // imagePath = path.basename(req.body.image);
     const result = await cloudinary.uploader.upload(imagePath, options);
     req.body.imageCloudinaryUrl = result.url;
-    req.body.image = imagePath;
+    const imageName = path.basename(req.body.image);
+    req.body.image = imageName;
     const post = await Post.create({ ...req.body });
     res.status(StatusCodes.CREATED).json({ post });
   } catch (error) {
