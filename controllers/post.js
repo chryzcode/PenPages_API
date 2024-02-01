@@ -13,9 +13,9 @@ const options = {
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   var imagePath = req.body.image;
+  console.log(imagePath);
   try {
-    // Upload the image
-    imagePath = path.basename(req.body.image);
+    // imagePath = path.basename(req.body.image);
     const result = await cloudinary.uploader.upload(imagePath, options);
     req.body.imageCloudinaryUrl = result.url;
     req.body.image = imagePath;
