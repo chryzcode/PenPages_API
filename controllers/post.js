@@ -48,26 +48,24 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
-  var imagePath = req.body.image;
+  const imagePath = req.body.image;
   try {
-    imagePath = path.basename(req.body.image.path);
-    console.log(imagePath);
     const result = await cloudinary.uploader.upload(imagePath, options);
-    console.log(result);
-    console.log(result.public_id);
+    req.body.imageCloudinaryUrl = result.url;
+    const imageName = path.basename(req.body.image);
+    req.body.image = imageName;
+    const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!post) {
+      throw new NotFoundError(`Post with id ${postId} does not exist`);
+    }
+    res.status(StatusCodes.OK).json({ post });
   } catch (error) {
     console.error(error);
+    res.status(StatusCodes.BAD_REQUEST).send(error);
   }
-  req.body.imageCloudinaryId = result.public_id;
-  req.body.image = imagePath;
-  const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!post) {
-    throw new NotFoundError(`Post with id ${postId} does not exist`);
-  }
-  res.status(StatusCodes.OK).json({ post });
 };
 
 export const deletePost = async (req, res) => {
