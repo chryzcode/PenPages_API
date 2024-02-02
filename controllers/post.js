@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, NotFoundError } from "../errors/index.js";
+import { NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
 import path from "path";
@@ -16,17 +16,15 @@ export const createPost = async (req, res) => {
   console.log(imagePath);
   try {
     const result = await cloudinary.uploader.upload(imagePath, options);
-    if (!result) {
-      throw new BadRequestError("error uploading image");
-    }
     req.body.imageCloudinaryUrl = result.url;
     const imageName = path.basename(req.body.image);
     req.body.image = imageName;
+    const post = await Post.create({ ...req.body });
+    res.status(StatusCodes.CREATED).json({ post });
   } catch (error) {
     console.error(error);
+    res.status(StatusCodes.BAD_REQUEST).send(error);
   }
-  const post = await Post.create({ ...req.body });
-  res.status(StatusCodes.CREATED).json({ post });
 };
 
 export const getAllPosts = async (req, res) => {
