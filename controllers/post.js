@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { NotFoundError } from "../errors/index.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
 import path from "path";
@@ -58,7 +58,7 @@ export const updatePost = async (req, res) => {
       req.body.image = imageName;
     } catch (error) {
       console.error(error);
-      res.status(StatusCodes.BAD_REQUEST).send(error);
+      throw new BadRequestError("error uploading image on cloudinary")
     }
   }
 
