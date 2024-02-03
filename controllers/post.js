@@ -13,21 +13,19 @@ const options = {
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const imagePath = req.body.image;
-  const result = await cloudinary.uploader.upload(imagePath, options);
-  if (!result) {
-    console.log(result);
+  try {
+    const result = await cloudinary.uploader.upload(imagePath, options);
+    req.body.imageCloudinaryUrl = result.url;
+    const imageName = path.basename(req.body.image);
+    req.body.image = imageName;
+  } catch (error) {
+    console.log(error);
     throw new BadRequestError("error uploading image on cloudinary");
   }
-  req.body.imageCloudinaryUrl = result.url;
-  const imageName = path.basename(req.body.image);
-  req.body.image = imageName;
-  // } catch (error) {
-  //   console.log(error);
-
-  // }
-
+  if (!req.body.imageCloudinaryUrl) {
+    throw new BadRequestError("error uploading image on cloudinary");
+  }
   const post = await Post.create({ ...req.body });
-
   res.status(StatusCodes.CREATED).json({ post });
 };
 
