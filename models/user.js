@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    imageCloudinaryUrl: {
+      type: String,
+    },
     email: {
       type: String,
       required: [true, "Please provide email"],
