@@ -112,12 +112,11 @@ export const updateUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  if (!user.image)
-  if (!req.body.image) {
-    throw new BadRequestError("The image field ")
+  if (!user.image && !req.body.image) {
+    throw new BadRequestError("The image field is required");
   }
   user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
-  
+
   res.status(StatusCodes.OK).json({ user });
 };
 
