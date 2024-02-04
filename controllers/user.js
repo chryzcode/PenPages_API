@@ -109,14 +109,15 @@ export const getUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const { userId } = req.user;
   var user = User.findOne({ _id: userId });
-  if ()
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exist`);
+  }
+  if (!user.image)
   if (!req.body.image) {
     throw new BadRequestError("The image field ")
   }
   user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
-  if (!user) {
-    throw new NotFoundError(`User with id ${userId} does not exist`);
-  }
+  
   res.status(StatusCodes.OK).json({ user });
 };
 
