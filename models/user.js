@@ -25,9 +25,7 @@ const userSchema = new mongoose.Schema(
       maxlength: 25,
     },
     image: {
-      data: Buffer,
-      contentType: String,
-      //make required later
+      type: String,
     },
     email: {
       type: String,
