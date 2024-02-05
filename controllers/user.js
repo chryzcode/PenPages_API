@@ -7,6 +7,7 @@ import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 import cloudinary from "cloudinary";
+import { json } from "express";
 
 const uniqueID = uuidv4();
 const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
@@ -112,7 +113,7 @@ export const updateUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  console.log(user)
+  const userImage = json({ user: { firstName: user.firstName, lastName: user.lastName } })
   if (!user.image && !req.body.image) {
     throw new BadRequestError("The image field is required");
   }
