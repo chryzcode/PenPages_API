@@ -109,7 +109,7 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { userId } = req.user;
-  var user = User.findOne({ _id: userId });
+  var user = await User.findOne({ _id: userId });
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
