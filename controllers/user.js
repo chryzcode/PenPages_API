@@ -108,6 +108,7 @@ export const getUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
+  console.log(req.user)
   const { userId } = req.user;
   var user = await User.findOne({ _id: userId });
   if (!user) {
