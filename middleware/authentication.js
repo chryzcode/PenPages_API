@@ -5,12 +5,10 @@ import User from "../models/user.js";
 export default async (req, res, next) => {
   // check header
   const authHeader = req.headers.authorization;
-  console.log(authHeader)
   if (!authHeader || !authHeader.startsWith("Bearer")) {
     throw new UnauthenticatedError("Authentication invalid");
   }
   const token = authHeader.split(" ")[1];
-  console.log(token);
   const user = await User.findOne({ token: token, verified: true });
   console.log(user);
   if (user) {
