@@ -113,7 +113,6 @@ export const updateUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  const userImage = json({ user: { firstName: user.firstName, lastName: user.lastName } })
   if (!user.image && !req.body.image) {
     throw new BadRequestError("The image field is required");
   }
