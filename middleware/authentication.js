@@ -10,7 +10,6 @@ export default async (req, res, next) => {
   }
   const token = authHeader.split(" ")[1];
   const user = await User.findOne({ token: token, verified: true });
-  console.log(user);
   if (user) {
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
