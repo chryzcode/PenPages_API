@@ -1,12 +1,12 @@
 import express from "express";
 import {
   createPost,
-  getUserPosts,
   likePost,
   updatePost,
   getPost,
   getAllPosts,
   deletePost,
+  getUserPosts,
 } from "../controllers/post.js";
 import authenticateUser from "../middleware/authentication.js";
 
