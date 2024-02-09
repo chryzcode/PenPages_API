@@ -90,7 +90,7 @@ export const login = async (req, res) => {
   var token = user.createJWT();
   await User.findOneAndUpdate({ token: token });
   token = user.token;
-  res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
+  res.status(StatusCodes.OK).json({ user: { firstName: user.firstName }, token });
 };
 
 export const getAllUsers = async (req, res) => {
