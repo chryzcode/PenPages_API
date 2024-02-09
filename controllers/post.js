@@ -53,7 +53,7 @@ export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
   const imagePath = req.body.image;
-  console.log(imagePath);
+
   if (imagePath) {
     try {
       const result = await cloudinary.uploader.upload(imagePath, options);

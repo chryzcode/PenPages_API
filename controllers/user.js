@@ -116,6 +116,20 @@ export const updateUser = async (req, res) => {
   if (!user.image && !req.body.image) {
     throw new BadRequestError("The image field is required");
   }
+
+  if (req.body.image) {
+    const imagePath = req.body.image;
+    try {
+      const result = await cloudinary.uploader.upload(imagePath, options);
+      req.body.imageCloudinaryUrl = result.url;
+      const imageName = path.basename(req.body.image);
+      req.body.image = imageName;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestError("error uploading image on cloudinary");
+    }
+  }
+
   user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
 
   res.status(StatusCodes.OK).json({ user });
