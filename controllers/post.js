@@ -14,7 +14,7 @@ export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const imagePath = req.body.image;
   try {
-    const result = await cloudinary.uploader.upload(imagePath, options);
+    const result = await cloudinary.uploader.upload(imagePath, {folder: 'PenPages/Post'});
     req.body.imageCloudinaryUrl = result.url;
     const imageName = path.basename(req.body.image);
     req.body.image = imageName;
