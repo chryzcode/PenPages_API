@@ -25,9 +25,11 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
+      default: "default_avatar.svg",
     },
     imageCloudinaryUrl: {
       type: String,
+      default: "https://res.cloudinary.com/diksiwkrx/image/upload/v1707511873/default_avatar_ekflby.svg",
     },
     email: {
       type: String,
@@ -87,13 +89,9 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.createJWT = function () {
-  const token = jwt.sign(
-    { userId: this._id, firstName: this.firstName },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
+  const token = jwt.sign({ userId: this._id, firstName: this.firstName }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
+  });
   this.token = token;
   return token;
 };
