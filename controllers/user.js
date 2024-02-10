@@ -7,14 +7,32 @@ import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 import cloudinary from "cloudinary";
-import { json } from "express";
+import e, { json } from "express";
+import path from "path";
 
 const uniqueID = uuidv4();
 const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
 
 const linkVerificationtoken = generateToken(uniqueID);
 
+export const logout = async (req, res) => {
+  const { userId } = req.user;
+  req.body.token = "";
+  await User.findOneAndUpdate({ _id: userId }, req.body);
+  res.status(StatusCodes.OK).send();
+};
+
+export const currentUser = async (req, res) => {
+  const { userId } = req.user;
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new UnauthenticatedError("No account is currently logged in or User does not exist");
+  }
+  res.status(StatusCodes.OK).json({ user });
+};
+
 export const register = async (req, res) => {
+  console.log(req.user);
   const user = await User.create({ ...req.body });
   const maildata = {
     from: process.env.Email_User,
@@ -57,10 +75,12 @@ export const verifyAccount = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    throw new BadRequestError("Put in your email and password");
+    throw new BadRequestError("Put in your email/username and password");
   }
-  const user = await User.findOne({ email });
+  var user = await User.findOne({ email: email });
   if (!user) {
+    user = await User.findOne({ username: email });
+  } else if (!user) {
     throw new UnauthenticatedError("User does not exist");
   }
 
@@ -90,7 +110,7 @@ export const login = async (req, res) => {
   var token = user.createJWT();
   await User.findOneAndUpdate({ token: token });
   token = user.token;
-  res.status(StatusCodes.OK).json({ user: { firstName: user.firstName, lastName: user.lastName }, token });
+  res.status(StatusCodes.OK).json({ user: { firstName: user.firstName }, token });
 };
 
 export const getAllUsers = async (req, res) => {
@@ -116,6 +136,23 @@ export const updateUser = async (req, res) => {
   if (!user.image && !req.body.image) {
     throw new BadRequestError("The image field is required");
   }
+
+  if (req.body.image) {
+    const imagePath = req.body.image;
+    try {
+      const result = await cloudinary.v2.uploader.upload(imagePath, {
+        folder: "PenPages/User/Avatar/",
+        use_filename: true,
+      });
+      req.body.imageCloudinaryUrl = result.url;
+      const imageName = path.basename(req.body.image);
+      req.body.image = imageName;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestError("error uploading image on cloudinary");
+    }
+  }
+
   user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
 
   res.status(StatusCodes.OK).json({ user });
@@ -128,13 +165,6 @@ export const deleteUser = async (req, res) => {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
   res.status(StatusCodes.OK).send("Your account has been disabled");
-};
-
-export const logout = async (req, res) => {
-  const { userId } = req.user;
-  req.body.token = "";
-  await User.findOneAndUpdate({ _id: userId }, req.body);
-  res.status(StatusCodes.OK).send();
 };
 
 export const sendForgotPasswordLink = async (req, res) => {
