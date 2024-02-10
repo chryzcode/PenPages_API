@@ -7,7 +7,7 @@ import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 import cloudinary from "cloudinary";
-import { json } from "express";
+import e, { json } from "express";
 
 const uniqueID = uuidv4();
 const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
@@ -31,6 +31,7 @@ export const currentUser = async (req, res) => {
 };
 
 export const register = async (req, res) => {
+  console.log(req.user);
   const user = await User.create({ ...req.body });
   const maildata = {
     from: process.env.Email_User,
@@ -73,10 +74,12 @@ export const verifyAccount = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    throw new BadRequestError("Put in your email and password");
+    throw new BadRequestError("Put in your email/username and password");
   }
-  const user = await User.findOne({ email });
+  var user = await User.findOne({ email: email });
   if (!user) {
+    user = await User.findOne({ username: email });
+  } else if (!user) {
     throw new UnauthenticatedError("User does not exist");
   }
 
