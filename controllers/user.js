@@ -25,7 +25,7 @@ export const currentUser = async (req, res) => {
   const { userId } = req.user;
   const user = User.findOne({ _id: userId });
   if (!user) {
-    throw new UnauthenticatedError("No account is currebtly logged in");
+    throw new UnauthenticatedError("No account is currebtly logged in or User does not exist");
   }
   res.status(StatusCodes.OK).json({ user });
 };
