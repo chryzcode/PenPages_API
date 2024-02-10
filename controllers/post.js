@@ -14,7 +14,7 @@ export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const imagePath = req.body.image;
   try {
-    const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post", use_filename: true });
+    const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image/", use_filename: true });
     req.body.imageCloudinaryUrl = result.url;
     const imageName = path.basename(req.body.image);
     req.body.image = imageName;
@@ -56,7 +56,7 @@ export const updatePost = async (req, res) => {
 
   if (imagePath) {
     try {
-      const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post", use_filename: true });
+      const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image", use_filename: true });
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.body.image);
       req.body.image = imageName;
