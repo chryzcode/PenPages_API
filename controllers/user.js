@@ -23,9 +23,9 @@ export const logout = async (req, res) => {
 
 export const currentUser = async (req, res) => {
   const { userId } = req.user;
-  const user = User.findOne({ _id: userId });
+  const user = await User.findOne({ _id: userId });
   if (!user) {
-    throw new UnauthenticatedError("No account is currebtly logged in or User does not exist");
+    throw new UnauthenticatedError("No account is currently logged in or User does not exist");
   }
   res.status(StatusCodes.OK).json({ user });
 };
