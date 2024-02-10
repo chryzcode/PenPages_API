@@ -14,7 +14,16 @@ const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
 
 const linkVerificationtoken = generateToken(uniqueID);
 
+
+export const logout = async (req, res) => {
+  const { userId } = req.user;
+  req.body.token = "";
+  await User.findOneAndUpdate({ _id: userId }, req.body);
+  res.status(StatusCodes.OK).send();
+};
+
 export const register = async (req, res) => {
+  logout(req, res)
   const user = await User.create({ ...req.body });
   const maildata = {
     from: process.env.Email_User,
@@ -55,6 +64,7 @@ export const verifyAccount = async (req, res) => {
 };
 
 export const login = async (req, res) => {
+  logout(req, res);
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequestError("Put in your email and password");
@@ -144,12 +154,7 @@ export const deleteUser = async (req, res) => {
   res.status(StatusCodes.OK).send("Your account has been disabled");
 };
 
-export const logout = async (req, res) => {
-  const { userId } = req.user;
-  req.body.token = "";
-  await User.findOneAndUpdate({ _id: userId }, req.body);
-  res.status(StatusCodes.OK).send();
-};
+
 
 export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
