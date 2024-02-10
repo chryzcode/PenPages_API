@@ -14,7 +14,6 @@ const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
 
 const linkVerificationtoken = generateToken(uniqueID);
 
-
 export const logout = async (req, res) => {
   const { userId } = req.user;
   req.body.token = "";
@@ -22,8 +21,16 @@ export const logout = async (req, res) => {
   res.status(StatusCodes.OK).send();
 };
 
+export const currentUser = async (req, res) => {
+  const { userId } = req.user;
+  const user = User.findOne({ _id: userId });
+  if (!user) {
+    throw new UnauthenticatedError("No account is currebtly logged in");
+  }
+  res.status(StatusCodes.OK).json({ user });
+};
+
 export const register = async (req, res) => {
-  logout(req, res)
   const user = await User.create({ ...req.body });
   const maildata = {
     from: process.env.Email_User,
@@ -64,7 +71,6 @@ export const verifyAccount = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  logout(req, res);
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequestError("Put in your email and password");
@@ -130,7 +136,10 @@ export const updateUser = async (req, res) => {
   if (req.body.image) {
     const imagePath = req.body.image;
     try {
-       const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/User/Avatar/", use_filename: true });
+      const result = await cloudinary.v2.uploader.upload(imagePath, {
+        folder: "PenPages/User/Avatar/",
+        use_filename: true,
+      });
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.body.image);
       req.body.image = imageName;
@@ -153,8 +162,6 @@ export const deleteUser = async (req, res) => {
   }
   res.status(StatusCodes.OK).send("Your account has been disabled");
 };
-
-
 
 export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
