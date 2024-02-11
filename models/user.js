@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema(
       ],
       unique: true,
     },
+    admin: {
+      type: Boolean,
+      default: false,
+    },
     bio: {
       type: String,
       required: false,
