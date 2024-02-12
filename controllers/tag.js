@@ -5,10 +5,11 @@ import User from "../models/user.js";
 
 export const createTag = async (req, res) => {
   const userId = req.user.userId;
-  const user = User.findOne({ _id: userId, admin: true });
-  // if (!user) {
-  //   throw new NotFoundError(`User with id ${userId} who is an admin does not exist`);
-  // }
+  const user = await User.findOne({ _id: userId, admin: true });
+  req.body.user = userId
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} who is an admin does not exist`);
+  }
   const tag = await Tag.create({ ...req.body });
   res.status(StatusCodes.CREATED).json({ tag });
 };
@@ -29,6 +30,11 @@ export const getTag = async (req, res) => {
 
 export const updateTag = async (req, res) => {
   const { tagId } = req.params;
+  const userId = req.user.userId;
+  const user = await User.findOne({ _id: userId, admin: true });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} who is an admin does not exist`);
+  }
   const tag = await Tag.findOneAndUpdate({ _id: tagId }, req.body, { new: true, runValidators: true });
   if (!tag) {
     throw new NotFoundError(`Tag with id ${tagId} does not exist`);
@@ -38,6 +44,11 @@ export const updateTag = async (req, res) => {
 
 export const deleteTag = async (req, res) => {
   const { tagId } = req.params;
+  const userId = req.user.userId
+  const user = await User.findOne({ _id: userId, admin: true });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} who is an admin does not exist`);
+  }
   const tag = await Tag.findOneAndDelete({ _id: tagId });
   if (!tag) {
     throw new NotFoundError(`Tag with id ${tagId} does not exist`);
