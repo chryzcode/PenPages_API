@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node --watch app.js"
   },
-  "_comment_dev_start": "node --watch app.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
