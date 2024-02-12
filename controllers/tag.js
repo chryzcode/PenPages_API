@@ -29,6 +29,10 @@ export const getTag = async (req, res) => {
 
 export const updateTag = async (req, res) => {
   const { tagId } = req.params;
+  const user = User.findOne({ _id: userId, admin: true });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} who is an admin does not exist`);
+  }
   const tag = await Tag.findOneAndUpdate({ _id: tagId }, req.body, { new: true, runValidators: true });
   if (!tag) {
     throw new NotFoundError(`Tag with id ${tagId} does not exist`);
