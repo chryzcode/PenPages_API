@@ -11,6 +11,7 @@ import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
 import authRouter from "./routes/user.js";
+import followerRouter from "./routes/follower.js"
 
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";

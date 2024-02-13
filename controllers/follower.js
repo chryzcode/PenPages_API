@@ -1,5 +1,5 @@
-import Follower from "../models/follower";
-import User from "../models/user";
+import Follower from "../models/follower.js";
+import User from "../models/user.js";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 
