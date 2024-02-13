@@ -1,7 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -105,4 +105,19 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return isMatch;
 };
 
-export default mongoose.model("User", userSchema);
+const followersSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "The user field is required"],
+  },
+
+  follower: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "The follower field is required"],
+  },
+});
+
+export const postLikes = mongoose.model("User", userSchema);
+export const Post = mongoose.model("Followers", followersSchema);
