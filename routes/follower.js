@@ -6,6 +6,6 @@ import authenticateUser from "../middleware/authentication.js";
 
 const router = express.Router();
 
-router.post(authenticateUser, followUnfollowUser);
+router.route("/follow-unfollow/:userId").post(authenticateUser, followUnfollowUser);
 
 export default router;
