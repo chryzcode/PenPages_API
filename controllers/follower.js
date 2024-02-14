@@ -14,7 +14,7 @@ export const followUnfollowUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`user/ author with ${userId} does not exist`);
   }
-  if (follower == user) {
+  if (follower.id == user.id) {
     throw new BadRequestError("You can not follow/ unfollow yourself");
   }
   req.body.user = userId;
@@ -26,6 +26,5 @@ export const followUnfollowUser = async (req, res) => {
     await Follower.create({ ...req.body });
   }
   const followersCount = (await Follower.find({ user: userId })).length;
-  console.log(followersCount);
   res.status(StatusCodes.OK).send();
 };
