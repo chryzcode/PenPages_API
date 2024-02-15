@@ -45,5 +45,10 @@ export const userFollowers = async (req, res) => {
     throw new NotFoundError(`user/ author with ${userId} does not exist`);
   }
   const followers = await Follower.find({ user: userId });
+  const allFollowers = [];
+  followers.forEach(aFollower => {
+    allFollowers.push(aFollower.follower);
+  });
+  console.log(allFollowers);
   res.status(StatusCodes.OK).json({ followers });
 };
