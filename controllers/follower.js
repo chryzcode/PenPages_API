@@ -50,5 +50,5 @@ export const userFollowers = async (req, res) => {
     allFollowers.push(aFollower.follower);
   });
   console.log(allFollowers);
-  res.status(StatusCodes.OK).json({ followers });
+  res.status(StatusCodes.OK).json({ allFollowers });
 };
