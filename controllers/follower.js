@@ -49,6 +49,5 @@ export const userFollowers = async (req, res) => {
   followers.forEach(aFollower => {
     allFollowers.push(aFollower.follower);
   });
-  console.log(allFollowers);
   res.status(StatusCodes.OK).json({ allFollowers });
 };
