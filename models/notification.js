@@ -20,6 +20,10 @@ const notificationSchema = new mongoose.Schema(
       type: String,
       required: [true, "The url field is required"],
     },
+    read: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

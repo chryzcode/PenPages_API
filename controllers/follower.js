@@ -1,7 +1,11 @@
 import Follower from "../models/follower.js";
 import User from "../models/user.js";
+import Notification from "../models/notification.js";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
+import "dotenv/config";
+
+const DOMAIN = process.env.DOMAIN;
 
 export const followUnfollowUser = async (req, res) => {
   const followerId = req.user.userId;
@@ -24,6 +28,12 @@ export const followUnfollowUser = async (req, res) => {
     await Follower.deleteOne({ user: userId, follower: followerId });
   } else {
     await Follower.create({ ...req.body });
+    Notification.create({
+      fromUser: followerId,
+      toUser: userId,
+      info: `${follower.username} just followed you`,
+      url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
+    });
   }
   res.status(StatusCodes.OK).send();
 };
