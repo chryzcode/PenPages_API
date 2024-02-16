@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { Comment, replyComment, likeComment, likeReplyComment } from "../models/comment.js";
 import User from "../models/user.js";
 import { Post } from "../models/post.js";
+import Notification from "../models/notification.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import "dotenv/config.js"
 
