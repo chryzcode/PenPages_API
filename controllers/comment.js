@@ -128,7 +128,11 @@ export const likeAReplyComment = async (req, res) => {
   if (!aReplyComment) {
     throw new NotFoundError(`Reply Comment with id ${replyCommentId} does not exists`);
   }
-  const post = await Post.findOne({ _id: aReplyComment.comment.post });
+  const comment = await Comment.findOne({ _id: aReplyComment.comment });
+  if (!comment) {
+    throw new NotFoundError(`Comment with id ${comment.id} does not exists`);
+  }
+  const post = await Post.findOne({ _id: comment.post });
   if (!post) {
     throw new NotFoundError(`Post with id ${post.id} does not exists`);
   }
