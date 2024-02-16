@@ -5,9 +5,9 @@ import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
 import path from "path";
-import "dotenv/config.js"
+import "dotenv/config.js";
 
-const DOMAIN = process.env.DOMAIN
+const DOMAIN = process.env.DOMAIN;
 
 const options = {
   use_filename: true,
@@ -108,6 +108,9 @@ export const likePost = async (req, res) => {
   }
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exists`);
+  }
+  if (user.id == post.author) {
+    throw new BadRequestError("You can not like your own post");
   }
   if (liked) {
     await postLikes.findOneAndDelete({ post: postId, user: userId });
