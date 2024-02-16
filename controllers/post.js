@@ -16,7 +16,10 @@ export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const imagePath = req.body.image;
   try {
-    const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image/", use_filename: true });
+    const result = await cloudinary.v2.uploader.upload(imagePath, {
+      folder: "PenPages/Post/Image/",
+      use_filename: true,
+    });
     req.body.imageCloudinaryUrl = result.url;
     const imageName = path.basename(req.body.image);
     req.body.image = imageName;
@@ -58,7 +61,10 @@ export const updatePost = async (req, res) => {
 
   if (imagePath) {
     try {
-      const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image", use_filename: true });
+      const result = await cloudinary.v2.uploader.upload(imagePath, {
+        folder: "PenPages/Post/Image",
+        use_filename: true,
+      });
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.body.image);
       req.body.image = imageName;
@@ -92,13 +98,13 @@ export const likePost = async (req, res) => {
   const { postId } = req.params;
   const { userId } = req.user;
   const liked = await postLikes.findOne({ post: postId, user: userId });
-  const post = await Post.findOne({ _id: postId })
-  const user = await User.findOne({ _id: userId })
+  const post = await Post.findOne({ _id: postId });
+  const user = await User.findOne({ _id: userId });
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exists`);
   }
   if (!post) {
-    throw new NotFoundError(`Post with id ${postId} does not exists`)
+    throw new NotFoundError(`Post with id ${postId} does not exists`);
   }
   if (liked) {
     await postLikes.findOneAndDelete({ post: postId, user: userId });
@@ -107,8 +113,8 @@ export const likePost = async (req, res) => {
     Notification.create({
       fromUser: user.id,
       toUser: post.author,
-      info: `${user..username} just liked your post ${post.title}`,
-      url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
+      info: `${user.username} just liked your post ${post.title}`,
+      url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   }
   const likes = (await postLikes.find({ post: postId })).length;
