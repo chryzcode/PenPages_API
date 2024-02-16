@@ -92,6 +92,7 @@ export const likePost = async (req, res) => {
   const { userId } = req.user;
   const liked = await postLikes.findOne({ post: postId, user: userId });
   const post = Post.findOne({ _id: postId })
+  const user 
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} dows not exists`)
   }
@@ -101,8 +102,8 @@ export const likePost = async (req, res) => {
     await postLikes.create({ post: postId, user: userId });
     Notification.create({
       fromUser: userId,
-      toUser: userId,
-      info: `${follower.username} just followed you`,
+      toUser: post.author,
+      info: `${follower.username} just liked your post ${post.title}`,
       url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
     });
   }
