@@ -2,7 +2,12 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
+import Notification from "../models/notification.js";
+import User from "../models/user.js";
 import path from "path";
+import "dotenv/config.js";
+
+const DOMAIN = process.env.DOMAIN;
 
 const options = {
   use_filename: true,
@@ -14,7 +19,10 @@ export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
   const imagePath = req.body.image;
   try {
-    const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image/", use_filename: true });
+    const result = await cloudinary.v2.uploader.upload(imagePath, {
+      folder: "PenPages/Post/Image/",
+      use_filename: true,
+    });
     req.body.imageCloudinaryUrl = result.url;
     const imageName = path.basename(req.body.image);
     req.body.image = imageName;
@@ -56,7 +64,10 @@ export const updatePost = async (req, res) => {
 
   if (imagePath) {
     try {
-      const result = await cloudinary.v2.uploader.upload(imagePath, { folder: "PenPages/Post/Image", use_filename: true });
+      const result = await cloudinary.v2.uploader.upload(imagePath, {
+        folder: "PenPages/Post/Image",
+        use_filename: true,
+      });
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.body.image);
       req.body.image = imageName;
@@ -90,10 +101,27 @@ export const likePost = async (req, res) => {
   const { postId } = req.params;
   const { userId } = req.user;
   const liked = await postLikes.findOne({ post: postId, user: userId });
+  const post = await Post.findOne({ _id: postId });
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} does not exists`);
+  }
+  if (user.id == post.author) {
+    throw new BadRequestError("You can not like your own post");
+  }
   if (liked) {
     await postLikes.findOneAndDelete({ post: postId, user: userId });
   } else {
     await postLikes.create({ post: postId, user: userId });
+    Notification.create({
+      fromUser: user.id,
+      toUser: post.author,
+      info: `${user.username} just liked your post ${post.title}`,
+      url: `${DOMAIN}/api/v1/post/${post.id}`,
+    });
   }
   const likes = (await postLikes.find({ post: postId })).length;
   res.status(StatusCodes.OK).json({ postLikesCount: likes });
