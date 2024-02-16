@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
+import Notification from "../models/notification.js";
 import path from "path";
 
 const options = {
@@ -90,10 +91,20 @@ export const likePost = async (req, res) => {
   const { postId } = req.params;
   const { userId } = req.user;
   const liked = await postLikes.findOne({ post: postId, user: userId });
+  const post = Post.findOne({ _id: postId })
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} dows not exists`)
+  }
   if (liked) {
     await postLikes.findOneAndDelete({ post: postId, user: userId });
   } else {
     await postLikes.create({ post: postId, user: userId });
+    Notification.create({
+      fromUser: userId,
+      toUser: userId,
+      info: `${follower.username} just followed you`,
+      url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
+    });
   }
   const likes = (await postLikes.find({ post: postId })).length;
   res.status(StatusCodes.OK).json({ postLikesCount: likes });
