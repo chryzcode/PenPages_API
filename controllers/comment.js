@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { Comment, replyComment, likeComment, likeReplyComment } from "../models/comment.js";
 import User from "../models/user.js";
+import { Post } from "../models/post.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 
 export const createComment = async (req, res) => {
@@ -93,14 +94,18 @@ export const likePostComment = async (req, res) => {
   if (!comment) {
     throw new NotFoundError(`Comment with id ${commentId} does not exists`);
   }
+  const post = await Post.findOne({ _id: comment.post });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+  }
   if (liked) {
     await likeComment.findOneAndDelete({ comment: commentId, user: userId });
   } else {
     await likeComment.create({ comment: commentId, user: userId });
     Notification.create({
       fromUser: user.id,
-      toUser: post.author,
-      info: `${user.username} just liked your post ${post.title}`,
+      toUser: comment.user,
+      info: `${user.username} just liked your comment on ${post.id}`,
       url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   }
