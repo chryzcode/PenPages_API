@@ -3,6 +3,7 @@ import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
+import User from "../models/user.js";
 import path from "path";
 
 const options = {
@@ -91,19 +92,22 @@ export const likePost = async (req, res) => {
   const { postId } = req.params;
   const { userId } = req.user;
   const liked = await postLikes.findOne({ post: postId, user: userId });
-  const post = Post.findOne({ _id: postId })
-  const user 
+  const post = await Post.findOne({ _id: postId })
+  const user = await User.findOne({ _id: userId })
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
   if (!post) {
-    throw new NotFoundError(`Post with id ${postId} dows not exists`)
+    throw new NotFoundError(`Post with id ${postId} does not exists`)
   }
   if (liked) {
     await postLikes.findOneAndDelete({ post: postId, user: userId });
   } else {
     await postLikes.create({ post: postId, user: userId });
     Notification.create({
-      fromUser: userId,
+      fromUser: user.id,
       toUser: post.author,
-      info: `${follower.username} just liked your post ${post.title}`,
+      info: `${user..username} just liked your post ${post.title}`,
       url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
     });
   }
