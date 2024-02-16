@@ -5,6 +5,9 @@ import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
 import path from "path";
+import "dotenv/config.js"
+
+const DOMAIN = process.env.DOMAIN
 
 const options = {
   use_filename: true,
