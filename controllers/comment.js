@@ -3,6 +3,9 @@ import { Comment, replyComment, likeComment, likeReplyComment } from "../models/
 import User from "../models/user.js";
 import { Post } from "../models/post.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
+import "dotenv/config.js"
+
+const DOMAIN = process.env.DOMAIN
 
 export const createComment = async (req, res) => {
   const { postId } = req.params;
@@ -105,7 +108,7 @@ export const likePostComment = async (req, res) => {
     Notification.create({
       fromUser: user.id,
       toUser: comment.user,
-      info: `${user.username} just liked your comment on ${post.id}`,
+      info: `${user.username} just liked your comment on ${post.title}`,
       url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   }
