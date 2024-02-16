@@ -4,9 +4,9 @@ import User from "../models/user.js";
 import { Post } from "../models/post.js";
 import Notification from "../models/notification.js";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
-import "dotenv/config.js"
+import "dotenv/config.js";
 
-const DOMAIN = process.env.DOMAIN
+const DOMAIN = process.env.DOMAIN;
 
 export const createComment = async (req, res) => {
   const { postId } = req.params;
@@ -120,7 +120,7 @@ export const likePostComment = async (req, res) => {
 export const likeAReplyComment = async (req, res) => {
   const { replyCommentId } = req.params;
   const { userId } = req.user;
-  const aReplyComment = await replyComment.findOne({ _id: commentId });
+  const aReplyComment = await replyComment.findOne({ _id: replyCommentId });
   const user = await User.findOne({ _id: userId });
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exists`);
@@ -128,11 +128,21 @@ export const likeAReplyComment = async (req, res) => {
   if (!aReplyComment) {
     throw new NotFoundError(`Reply Comment with id ${replyCommentId} does not exists`);
   }
+  const post = await Post.findOne({ _id: aReplyComment.comment.post });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+  }
   const liked = await likeReplyComment.findOne({ replyComment: replyCommentId, user: userId });
   if (liked) {
     await likeReplyComment.findOneAndDelete({ replyComment: replyCommentId, user: userId });
   } else {
     await likeReplyComment.create({ replyComment: replyCommentId, user: userId });
+    Notification.create({
+      fromUser: user.id,
+      toUser: aReplyComment.user,
+      info: `${user.username} just liked your reply on a ${post.title} comment`,
+      url: `${DOMAIN}/api/v1/post/${post.id}`,
+    });
   }
   const likes = (await likeReplyComment.find({ replyComment: replyCommentId })).length;
   res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
