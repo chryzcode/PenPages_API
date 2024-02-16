@@ -120,6 +120,14 @@ export const likePostComment = async (req, res) => {
 export const likeAReplyComment = async (req, res) => {
   const { replyCommentId } = req.params;
   const { userId } = req.user;
+  const aReplyComment = await replyComment.findOne({ _id: commentId });
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
+  if (!aReplyComment) {
+    throw new NotFoundError(`Reply Comment with id ${replyCommentId} does not exists`);
+  }
   const liked = await likeReplyComment.findOne({ replyComment: replyCommentId, user: userId });
   if (liked) {
     await likeReplyComment.findOneAndDelete({ replyComment: replyCommentId, user: userId });
