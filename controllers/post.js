@@ -4,6 +4,7 @@ import { Post, postLikes } from "../models/post.js";
 import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
+import Follower from "../models/follower.js";
 import path from "path";
 import "dotenv/config.js";
 
@@ -34,6 +35,19 @@ export const createPost = async (req, res) => {
     throw new BadRequestError("error uploading image on cloudinary");
   }
   const post = await Post.create({ ...req.body });
+  const author = await User.findOne({ _id: post.author });
+  if (!author) {
+    throw new NotFoundError(`User/ Author with id ${post.author} does not exist`);
+  }
+  const followers = await Follower.find({ user: post.author });
+  followers.forEach(aFollower => {
+    Notification.create({
+      fromUser: post.author,
+      toUser: aFollower.follower,
+      info: `${author.username} just published a post ${post.title}`,
+      url: `${DOMAIN}/api/v1/post/${post.id}`,
+    });
+  });
   res.status(StatusCodes.CREATED).json({ post });
 };
 
