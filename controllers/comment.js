@@ -14,11 +14,11 @@ export const createComment = async (req, res) => {
   req.body.user = req.user.userId;
   const user = await User.findOne({ _id: req.user.userId });
   if (!user) {
-    throw new NotFoundError(`User with id ${userId} does not exists`);
+    throw new NotFoundError(`User with id ${req.user.userId} does not exists`);
   }
   const post = await Post.findOne({ _id: postId });
   if (!post) {
-    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+    throw new NotFoundError(`Post with id ${postId} does not exists`);
   }
   const comment = await Comment.create({ ...req.body });
   Notification.create({
