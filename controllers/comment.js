@@ -12,7 +12,21 @@ export const createComment = async (req, res) => {
   const { postId } = req.params;
   req.body.post = postId;
   req.body.user = req.user.userId;
+  const user = await User.findOne({ _id: req.user.userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${req.user.userId} does not exists`);
+  }
+  const post = await Post.findOne({ _id: postId });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} does not exists`);
+  }
   const comment = await Comment.create({ ...req.body });
+  Notification.create({
+    fromUser: user.id,
+    toUser: post.author,
+    info: `${user.username} just made a comment on ${post.title}`,
+    url: `${DOMAIN}/api/v1/post/${post.id}`,
+  });
   res.status(StatusCodes.CREATED).json({ comment });
 };
 
@@ -20,8 +34,26 @@ export const createReplyComment = async (req, res) => {
   const { commentId } = req.params;
   req.body.comment = commentId;
   req.body.user = req.user.userId;
-  const comment = await replyComment.create({ ...req.body });
-  res.status(StatusCodes.CREATED).json({ comment });
+  const user = await User.findOne({ _id: req.user.userId });
+  const comment = await Comment.findOne({ _id: commentId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${req.user.userId} does not exists`);
+  }
+  if (!comment) {
+    throw new NotFoundError(`Post with id ${commentId} does not exists`);
+  }
+  const post = await Post.findOne({ _id: comment.post });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+  }
+  const aComment = await replyComment.create({ ...req.body });
+  Notification.create({
+    fromUser: user.id,
+    toUser: comment.user,
+    info: `${user.username} just made a reply to your comment on ${post.title}`,
+    url: `${DOMAIN}/api/v1/post/${post.id}`,
+  });
+  res.status(StatusCodes.CREATED).json({ aComment });
 };
 
 export const getPostAllComments = async (req, res) => {
