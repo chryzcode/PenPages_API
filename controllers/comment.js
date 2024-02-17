@@ -24,7 +24,7 @@ export const createComment = async (req, res) => {
   Notification.create({
     fromUser: user.id,
     toUser: post.author,
-    info: `${user.username} just made a commented on ${post.title}`,
+    info: `${user.username} just made a comment on ${post.title}`,
     url: `${DOMAIN}/api/v1/post/${post.id}`,
   });
   res.status(StatusCodes.CREATED).json({ comment });
@@ -50,7 +50,7 @@ export const createReplyComment = async (req, res) => {
   Notification.create({
     fromUser: user.id,
     toUser: comment.user,
-    info: `${user.username} just made a reply yo your comment on ${post.title}`,
+    info: `${user.username} just made a reply to your comment on ${post.title}`,
     url: `${DOMAIN}/api/v1/post/${post.id}`,
   });
   res.status(StatusCodes.CREATED).json({ aComment });
