@@ -12,7 +12,21 @@ export const createComment = async (req, res) => {
   const { postId } = req.params;
   req.body.post = postId;
   req.body.user = req.user.userId;
+  const user = await User.findOne({ _id: req.user.userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
+  const post = await Post.findOne({ _id: postId });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+  }
   const comment = await Comment.create({ ...req.body });
+  Notification.create({
+    fromUser: user.id,
+    toUser: post.author,
+    info: `${user.username} just made a commented on ${post.title}`,
+    url: `${DOMAIN}/api/v1/post/${post.id}`,
+  });
   res.status(StatusCodes.CREATED).json({ comment });
 };
 
