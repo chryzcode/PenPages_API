@@ -35,13 +35,16 @@ export const createPost = async (req, res) => {
     throw new BadRequestError("error uploading image on cloudinary");
   }
   const post = await Post.create({ ...req.body });
-  const author = await User.findOne({_id: })
+  const author = await User.findOne({ _id: post.author });
+  if (!author) {
+    throw new NotFoundError(`User/ Author with id ${post.author} does not exist`);
+  }
   const followers = await Follower.find({ user: post.author });
   followers.forEach(aFollower => {
     Notification.create({
       fromUser: post.author,
       toUser: aFollower.follower,
-      info: `${user.username} just liked your post ${post.title}`,
+      info: `${author.username} just published a post ${post.title}`,
       url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   });
