@@ -58,13 +58,16 @@ export const getAllPosts = async (req, res) => {
 
 export const getPersonalisedPosts = async (req, res) => {
   const userId = req.user.userId;
-  const allPosts = [];
-  const followedAuthors = (await Follower.find({ follower: userId })).forEach(aFollowedAuthor => {
-    console.log(aFollowedAuthor.user);
-    const posts = Post.find({ author: aFollowedAuthor.user });
-    allPosts.push(posts);
+  let allPosts = [];
+  let allFollowedAuthors = [];
+  const followedAuthors = await Follower.find({ follower: userId });
+  followedAuthors.forEach(aFollowedAuthor => {
+    allFollowedAuthors.push(aFollowedAuthor.follower);
   });
-
+  for (let i = 0; i < allFollowedAuthors.length; i++) {
+    const posts = await Post.find({ author: allFollowedAuthors[i] });
+    allPosts = allPosts.concat(posts);
+  }
   res.status(StatusCodes.OK).json({ allPosts });
 };
 
