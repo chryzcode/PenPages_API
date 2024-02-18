@@ -56,6 +56,21 @@ export const getAllPosts = async (req, res) => {
   res.status(StatusCodes.OK).json({ allPosts });
 };
 
+export const getPersonalisedPosts = async (req, res) => {
+  const userId = req.user.userId;
+  let allPosts = [];
+  let allFollowedAuthors = [];
+  const followedAuthors = await Follower.find({ follower: userId });
+  followedAuthors.forEach(aFollowedAuthor => {
+    allFollowedAuthors.push(aFollowedAuthor.follower);
+  });
+  for (let i = 0; i < allFollowedAuthors.length; i++) {
+    const posts = await Post.find({ author: allFollowedAuthors[i] });
+    allPosts = allPosts.concat(posts);
+  }
+  res.status(StatusCodes.OK).json({ allPosts });
+};
+
 export const getPost = async (req, res) => {
   const { postId } = req.params;
   const post = await Post.findOne({ _id: postId });
