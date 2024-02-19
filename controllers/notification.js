@@ -18,25 +18,26 @@ export const markNotificationRead = async (req, res) => {
 
 export const allNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId });
+  const notifications = await Notification.find({ toUser: userId });
+  console.log(notifications)
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allUnreadNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: false });
+  const notifications = await Notification.find({ toUser: userId, read: false });
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allReadNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: true });
+  const notifications = await Notification.find({ toUser: userId, read: true });
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const markUnreadNotificationsRead = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: false });
+  const notifications = await Notification.find({ toUser: userId, read: false });
   (await notifications).forEach(notification => {
     notification.read = true;
   });
