@@ -36,9 +36,10 @@ export const allReadNotifications = async (req, res) => {
 
 export const markUnreadNotificationsRead = async (req, res) => {
   const userId = req.user.userId;
-    const notifications = Notification.find({ toUser: userId, read: false });
-    (await notifications).forEach(notification => {
-        notification.
-    })
+  const notifications = Notification.find({ toUser: userId, read: false });
+  (await notifications).forEach(notification => {
+    notification.read = true;
+  });
+  console.log(notifications);
   res.status(StatusCodes.OK).json({ notifications });
 };
