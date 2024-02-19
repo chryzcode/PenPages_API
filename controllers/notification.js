@@ -3,9 +3,9 @@ import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 
 export const markNotificationRead = async (req, res) => {
-  const notificationId = req.params;
+  const { notificationId } = req.params;
   const userId = req.user.userId;
-  const notification = Notification.findOneAndUpdate(
+  const notification = await Notification.findOneAndUpdate(
     { _id: notificationId, toUser: userId },
     { read: true },
     { runValidators: true, new: true }
@@ -19,7 +19,7 @@ export const markNotificationRead = async (req, res) => {
 export const allNotifications = async (req, res) => {
   const userId = req.user.userId;
   const notifications = await Notification.find({ toUser: userId });
-  console.log(notifications)
+  console.log(notifications);
   res.status(StatusCodes.OK).json({ notifications });
 };
 
