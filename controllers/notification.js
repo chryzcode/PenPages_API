@@ -15,3 +15,9 @@ export const markNotificationRead = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ notification });
 };
+
+export const allNotifications = async (req, res) => {
+  const userId = req.user.userId;
+  const notifications = Notification.find({ toUser: userId });
+  res.status(StatusCodes.OK).json({ notifications });
+};
