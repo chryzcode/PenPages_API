@@ -12,7 +12,7 @@ import postRouter from "./routes/post.js";
 import tagRouter from "./routes/tag.js";
 import authRouter from "./routes/user.js";
 import followerRouter from "./routes/follower.js";
-import notificationRouter from "./routes/notification.js"
+import notificationRouter from "./routes/notification.js";
 
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";
