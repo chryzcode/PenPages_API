@@ -1,5 +1,5 @@
-import Notification from "../models/notification";
-import { BadRequestError, NotFoundError } from "../errors";
+import Notification from "../models/notification.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 
 export const markNotificationRead = async (req, res) => {
