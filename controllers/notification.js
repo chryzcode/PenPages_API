@@ -1,11 +1,11 @@
-import Notification from "../models/notification";
-import { BadRequestError, NotFoundError } from "../errors";
+import Notification from "../models/notification.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { StatusCodes } from "http-status-codes";
 
 export const markNotificationRead = async (req, res) => {
-  const notificationId = req.params;
+  const { notificationId } = req.params;
   const userId = req.user.userId;
-  const notification = Notification.findOneAndUpdate(
+  const notification = await Notification.findOneAndUpdate(
     { _id: notificationId, toUser: userId },
     { read: true },
     { runValidators: true, new: true }
@@ -18,25 +18,26 @@ export const markNotificationRead = async (req, res) => {
 
 export const allNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId });
+  const notifications = await Notification.find({ toUser: userId });
+  console.log(notifications);
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allUnreadNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: false });
+  const notifications = await Notification.find({ toUser: userId, read: false });
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allReadNotifications = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: true });
+  const notifications = await Notification.find({ toUser: userId, read: true });
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const markUnreadNotificationsRead = async (req, res) => {
   const userId = req.user.userId;
-  const notifications = Notification.find({ toUser: userId, read: false });
+  const notifications = await Notification.find({ toUser: userId, read: false });
   (await notifications).forEach(notification => {
     notification.read = true;
   });
