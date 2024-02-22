@@ -32,7 +32,6 @@ export const currentUser = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  console.log(req.user);
   const user = await User.create({ ...req.body });
   const fromEmail = process.env.Email_User;
   const maildata = {
