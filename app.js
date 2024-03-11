@@ -14,38 +14,11 @@ import authRouter from "./routes/user.js";
 import followerRouter from "./routes/follower.js";
 import notificationRouter from "./routes/notification.js";
 
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express"
-
-
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "PenPages Api",
-      version: "1.0.0",
-      description: "A Content Creation Platform(poems, articles, e-books) API",
-    },
-    servers: [
-      {
-        url: "https://penpages-api.onrender.com",
-      },
-    ],
-  },
-  apis: ["./routes/*.js"],
-};
-
-const specs = swaggerJSDoc(options);
-
-
 // error handler
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 
 const app = express();
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
 const port = process.env.PORT || 5000;
 
 app.set("trust proxy", 1);
