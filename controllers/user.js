@@ -34,6 +34,7 @@ export const currentUser = async (req, res) => {
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
   const fromEmail = process.env.Email_User;
+  const secretKey = process.env.JWT_SECRET;
   const maildata = {
     from: `The Product Conclave ${fromEmail}`,
     to: user.email,
@@ -42,7 +43,7 @@ export const register = async (req, res) => {
       user.id
     }/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+    )}/?key=${secretKey}">link</a> to verify your account. Link expires in 10 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -61,7 +62,7 @@ export const register = async (req, res) => {
 export const verifyAccount = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
-  const secretKey = process.env.JWT_SECRET;
+  const secretKey = req.params.key;
   try {
     jwt.verify(token, secretKey);
     const user = await User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
