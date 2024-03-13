@@ -75,6 +75,7 @@ export const verifyAccount = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  const secretKey = process.env.JWT_SECRET;
   if (!email || !password) {
     throw new BadRequestError("Put in your email/username and password");
   }
@@ -98,7 +99,7 @@ export const login = async (req, res) => {
         user.id
       }/?token=${encodeURIComponent(
         linkVerificationtoken
-      )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+      )}?key=${secretKey}">link</a> to verify your account. Link expires in 10 mins.</p>`,
     };
     transporter.sendMail(maildata, (error, info) => {
       if (error) {
