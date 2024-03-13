@@ -26,7 +26,7 @@ router.route("/auth/logout").post(authenticateUser, logout);
 router.route("/update").put(authenticateUser, updateUser);
 router.route("/delete").delete(authenticateUser, deleteUser);
 router.route("/send-forgot-password-link").post(sendForgotPasswordLink);
-router.route("/auth/forgot-password/:userId/:token/:key").post(verifyForgotPasswordToken);
-router.route("/auth/verify-account/:userId/:token/:key").post(verifyAccount);
+router.route("/auth/forgot-password/:userId/:token").post(verifyForgotPasswordToken);
+router.route("/auth/verify-account/:userId/:token").post(verifyAccount);
 
 export default router;

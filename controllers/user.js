@@ -34,7 +34,6 @@ export const currentUser = async (req, res) => {
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
   const fromEmail = process.env.Email_User;
-  const secretKey = process.env.JWT_SECRET;
   const maildata = {
     from: `The Product Conclave ${fromEmail}`,
     to: user.email,
@@ -43,7 +42,7 @@ export const register = async (req, res) => {
       user.id
     }/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}/?key=${secretKey}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+    )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -62,7 +61,7 @@ export const register = async (req, res) => {
 export const verifyAccount = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
-  const secretKey = req.params.key;
+  const secretKey = process.env.JWT_SECRET;
   try {
     jwt.verify(token, secretKey);
     const user = await User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
@@ -75,7 +74,6 @@ export const verifyAccount = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const secretKey = process.env.JWT_SECRET;
   if (!email || !password) {
     throw new BadRequestError("Put in your email/username and password");
   }
@@ -99,7 +97,7 @@ export const login = async (req, res) => {
         user.id
       }/?token=${encodeURIComponent(
         linkVerificationtoken
-      )}?key=${secretKey}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+      )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
     };
     transporter.sendMail(maildata, (error, info) => {
       if (error) {
@@ -171,7 +169,6 @@ export const deleteUser = async (req, res) => {
 
 export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
-  const secretKey = process.env.JWT_SECRET;
   if (!email) {
     throw new BadRequestError("Email field is required");
   }
@@ -187,7 +184,7 @@ export const sendForgotPasswordLink = async (req, res) => {
       user.id
     }/?token=${encodeURIComponent(
       linkVerificationtoken
-    )}/?key=${secretKey}">link</a> for verification. Link expires in 30 mins.</p>`,
+    )}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -200,7 +197,7 @@ export const sendForgotPasswordLink = async (req, res) => {
 export const verifyForgotPasswordToken = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
-  const secretKey = req.params.key;
+  const secretKey = process.env.JWT_SECRET;
   var { password } = req.body;
   try {
     jwt.verify(token, secretKey);
