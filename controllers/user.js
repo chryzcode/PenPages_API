@@ -171,6 +171,7 @@ export const deleteUser = async (req, res) => {
 
 export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
+  const secretKey = process.env.JWT_SECRET;
   if (!email) {
     throw new BadRequestError("Email field is required");
   }
@@ -184,7 +185,9 @@ export const sendForgotPasswordLink = async (req, res) => {
     subject: `${user.firstName} you forgot your password`,
     html: `<p>Please use the following <a href="${domain}/verify/forgot-password/?userId=${
       user.id
-    }/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
+    }/?token=${encodeURIComponent(
+      linkVerificationtoken
+    )}/?key=${secretKey}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
@@ -197,7 +200,7 @@ export const sendForgotPasswordLink = async (req, res) => {
 export const verifyForgotPasswordToken = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
-  const secretKey = process.env.JWT_SECRET;
+  const secretKey = req.params.key;
   var { password } = req.body;
   try {
     jwt.verify(token, secretKey);
