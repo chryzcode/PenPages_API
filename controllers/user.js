@@ -149,7 +149,7 @@ export const updateUser = async (req, res) => {
       req.body.image = imageName;
     } catch (error) {
       console.error(error);
-      throw new BadRequestError("error uploading image on cloudinary");
+      throw new BadRequestError({ "error uploading image on cloudinary": error });
     }
   }
 
