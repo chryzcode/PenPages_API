@@ -89,7 +89,7 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
-  const imagePath = req.body.image;
+  const imagePath = req.files.fileToUpload.path;
 
   if (imagePath) {
     try {
@@ -98,7 +98,7 @@ export const updatePost = async (req, res) => {
         use_filename: true,
       });
       req.body.imageCloudinaryUrl = result.url;
-      const imageName = path.basename(req.body.image);
+      const imageName = path.basename(req.files.fileToUpload.path);
       req.body.image = imageName;
     } catch (error) {
       console.error(error);
