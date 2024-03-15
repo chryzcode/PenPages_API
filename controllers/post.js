@@ -97,6 +97,7 @@ export const updatePost = async (req, res) => {
         folder: "PenPages/Post/Image",
         use_filename: true,
       });
+      
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.files.fileToUpload.path);
       req.body.image = imageName;
