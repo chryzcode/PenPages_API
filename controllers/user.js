@@ -149,7 +149,7 @@ export const updateUser = async (req, res) => {
       req.body.image = imageName;
     } catch (error) {
       console.error(error);
-      throw new BadRequestError("error uploading image on cloudinary");
+      throw new BadRequestError({ "error uploading image on cloudinary": error });
     }
   }
 
@@ -182,7 +182,9 @@ export const sendForgotPasswordLink = async (req, res) => {
     subject: `${user.firstName} you forgot your password`,
     html: `<p>Please use the following <a href="${domain}/verify/forgot-password/?userId=${
       user.id
-    }/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
+    }/?token=${encodeURIComponent(
+      linkVerificationtoken
+    )}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
