@@ -54,7 +54,7 @@ export const register = async (req, res) => {
   res.status(StatusCodes.CREATED).json({
     user: { firstName: user.firstName, lastName: user.lastName },
     token,
-    msg: "check your mail for account verification",
+    success: "check your mail for account verification",
   });
 };
 
