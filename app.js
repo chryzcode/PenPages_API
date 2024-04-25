@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 
 import commentRouter from "./routes/comment.js";
 import postRouter from "./routes/post.js";
@@ -31,6 +32,7 @@ app.use(
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
