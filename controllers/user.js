@@ -7,7 +7,6 @@ import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 import cloudinary from "cloudinary";
-import e, { json } from "express";
 import path from "path";
 
 const uniqueID = uuidv4();
@@ -112,6 +111,13 @@ export const login = async (req, res) => {
   var token = user.createJWT();
   await User.findOneAndUpdate({ token: token });
   token = user.token;
+
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    expire: 48 * 60 * 60 * 1000, //after 2 days (48 hrs)
+    // Other cookie options such as expiration, secure, domain, etc.
+  });
+
   res.status(StatusCodes.OK).json({ user: { firstName: user.firstName }, token });
 };
 
