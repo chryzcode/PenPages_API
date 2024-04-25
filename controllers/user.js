@@ -77,11 +77,13 @@ export const login = async (req, res) => {
   if (!email || !password) {
     throw new BadRequestError("Put in your email/username and password");
   }
-  var user = await User.findOne({ email: email });
+
+  var userByEmail = await User.findOne({ email: email });
+  var userByUsername = await User.findOne({ username: email });
+
+  var user = userByEmail || userByUsername;
   if (!user) {
-    user = await User.findOne({ username: email });
-  } else if (!user) {
-    throw new UnauthenticatedError("User does not exist");
+    throw new NotFoundError("User does not exist");
   }
 
   const passwordMatch = await user.comparePassword(password);
@@ -182,9 +184,7 @@ export const sendForgotPasswordLink = async (req, res) => {
     subject: `${user.firstName} you forgot your password`,
     html: `<p>Please use the following <a href="${domain}/verify/forgot-password/?userId=${
       user.id
-    }/?token=${encodeURIComponent(
-      linkVerificationtoken
-    )}">link</a> for verification. Link expires in 30 mins.</p>`,
+    }/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
