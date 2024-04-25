@@ -17,6 +17,7 @@ const linkVerificationtoken = generateToken(uniqueID);
 export const logout = async (req, res) => {
   const { userId } = req.user;
   req.body.token = "";
+  res.clearCookie("accessToken");
   await User.findOneAndUpdate({ _id: userId }, req.body);
   res.status(StatusCodes.OK).send();
 };
@@ -113,7 +114,7 @@ export const login = async (req, res) => {
   token = user.token;
 
   res.cookie("accessToken", token, {
-    httpOnly: true,
+    // httpOnly: true,
     expire: 48 * 60 * 60 * 1000, //after 2 days (48 hrs)
     // Other cookie options such as expiration, secure, domain, etc.
   });
