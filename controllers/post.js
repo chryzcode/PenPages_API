@@ -52,7 +52,10 @@ export const createPost = async (req, res) => {
 };
 
 export const getAllPosts = async (req, res) => {
-  const allPosts = await Post.find({}).populate("author").populate("tag").sort("createdAt");
+  const allPosts = await Post.find({})
+    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate("tag")
+    .sort("createdAt");
   res.status(StatusCodes.OK).json({ allPosts });
 };
 
@@ -73,7 +76,9 @@ export const getPersonalisedPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findOne({ _id: postId }).populate("author").populate("tag");
+  const post = await Post.findOne({ _id: postId })
+    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate("tag");
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
   }
