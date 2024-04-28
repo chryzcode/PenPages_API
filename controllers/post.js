@@ -52,7 +52,7 @@ export const createPost = async (req, res) => {
 };
 
 export const getAllPosts = async (req, res) => {
-  const allPosts = await Post.find({}).sort("createdAt");
+  const allPosts = await Post.find({}).populate("author").populate("tag").sort("createdAt");
   res.status(StatusCodes.OK).json({ allPosts });
 };
 
@@ -73,8 +73,7 @@ export const getPersonalisedPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findOne({ _id: postId });
-  console.log(post);
+  const post = await Post.findOne({ _id: postId }).populate("author").populate("tag");
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
   }
@@ -97,7 +96,7 @@ export const updatePost = async (req, res) => {
         folder: "PenPages/Post/Image",
         use_filename: true,
       });
-      
+
       req.body.imageCloudinaryUrl = result.url;
       const imageName = path.basename(req.files.fileToUpload.path);
       req.body.image = imageName;
