@@ -196,3 +196,15 @@ export const likePost = async (req, res) => {
   const likes = (await postLikes.find({ post: postId })).length;
   res.status(StatusCodes.OK).json({ postLikesCount: likes });
 };
+
+export const aPostLikes = async (req, res) => {
+  const { postId } = req.params;
+  const post = await Post.findOne({ _id: postId });
+  if (!post) {
+    throw new NotFoundError(`Post not found`);
+  }
+  const likes = await postLikes
+    .findOne({ post: postId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+  res.status(StatusCodes.OK).json({ likes });
+};
