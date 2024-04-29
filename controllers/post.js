@@ -94,12 +94,30 @@ export const getPersonalisedPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findOne({ _id: postId })
+  let post = await Post.findOne({ _id: postId })
     .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
     .populate("tag");
+
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
   }
+
+  // Function to get likes for the post
+  const getLikesForPost = async postId => {
+    try {
+      const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
+      return likes;
+    } catch (error) {
+      console.error(`Error fetching likes for post ${postId}:`, error);
+      return [];
+    }
+  };
+
+  // Retrieve likes for the post
+  const likes = await getLikesForPost(postId);
+
+  // Merge likes into the post object
+  post = { ...post.toObject(), likes };
   res.status(StatusCodes.OK).json({ post });
 };
 
