@@ -38,6 +38,7 @@ const postSchema = new mongoose.Schema(
       enum: ["article", "poem", "book"],
       default: "article",
     },
+    
   },
   { timestamps: true }
 );
