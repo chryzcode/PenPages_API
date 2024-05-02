@@ -164,7 +164,7 @@ export const deletePost = async (req, res) => {
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
   }
-  res.status(StatusCodes.OK).send();
+  res.status(StatusCodes.OK).json({success: "Post successfully deleted"});
 };
 
 export const likePost = async (req, res) => {
