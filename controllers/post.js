@@ -164,7 +164,7 @@ export const deletePost = async (req, res) => {
   if (!post) {
     throw new NotFoundError(`Post with id ${postId} does not exist`);
   }
-  res.status(StatusCodes.OK).json({success: "Post successfully deleted"});
+  res.status(StatusCodes.OK).json({ success: "Post successfully deleted" });
 };
 
 export const likePost = async (req, res) => {
@@ -207,4 +207,17 @@ export const aPostLikes = async (req, res) => {
     .find({ post: postId })
     .populate("user", "username firstName lastName imageCloudinaryUrl _id");
   res.status(StatusCodes.OK).json({ likes });
+};
+
+export const getAUserPosts = async (req, res) => {
+  const { username } = req.params;
+  const user = await User.findOne({ username: username });
+  if (!user) {
+    throw new NotFoundError(`User does not exist`);
+  }
+  const posts = await Post.find({ author: user._id })
+    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate("tag");
+
+  res.status(StatusCodes.OK).json({ posts });
 };
