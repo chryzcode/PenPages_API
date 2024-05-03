@@ -79,7 +79,6 @@ export const getAllPosts = async (req, res) => {
 
 export const getPersonalisedPosts = async (req, res) => {
   const userId = req.user.userId;
-  console.log("hi")
   let allPosts = [];
   let allFollowedAuthors = [];
   const followedAuthors = await Follower.find({ follower: userId });
