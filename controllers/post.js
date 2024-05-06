@@ -5,6 +5,7 @@ import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
 import Follower from "../models/follower.js";
+import { Comment } from "../models/comment.js";
 import path from "path";
 import "dotenv/config.js";
 
@@ -113,11 +114,22 @@ export const getPost = async (req, res) => {
     }
   };
 
+  const getPostComments = async postId => {
+    try {
+      const comments = await Comment.find({ post: postId }).populate("user", "username firstName lastName _id");
+      return comments;
+    } catch (error) {
+      console.error(`Error fetching comment for post ${postId}:`, error);
+      return [];
+    }
+  };
+
   // Retrieve likes for the post
   const likes = await getLikesForPost(postId);
+  const comments = await getPostComments(post);
 
   // Merge likes into the post object
-  post = { ...post.toObject(), likes };
+  post = { ...post.toObject(), likes, comments };
   res.status(StatusCodes.OK).json({ post });
 };
 
