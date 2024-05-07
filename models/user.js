@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 25,
     },
+    bio: {
+      type: String,
+    },
     image: {
       type: String,
       default: "default_avatar.svg",
