@@ -227,9 +227,26 @@ export const getAUserPosts = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User does not exist`);
   }
-  const posts = await Post.find({ author: user._id })
+  let posts = await Post.find({ author: user._id })
     .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
     .populate("tag");
+  
+  const getLikesForPost = async postId => {
+    try {
+      const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
+      return likes;
+    } catch (error) {
+      console.error(`Error fetching likes for post ${postId}:`, error);
+      return [];
+    }
+  };
 
+  // Map over allPosts and retrieve likes for each post
+  posts = await Promise.all(
+    posts.map(async post => {
+      const likes = await getLikesForPost(post._id);
+      return { ...post.toObject(), likes }; // Merge likes into the post object
+    })
+  );
   res.status(StatusCodes.OK).json({ posts });
 };
