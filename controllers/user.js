@@ -137,34 +137,30 @@ export const getUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const { userId } = req.user;
-  var user = await User.findOne({ _id: userId });
+  const { userId, currentPassword, newPassword } = req.body;
+
+  // Find the user by userId
+  const user = await User.findById(userId);
+
+  // If user not found, throw an error
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  if (!user.image && !req.body.image) {
-    throw new BadRequestError("The image field is required");
+
+  // Validate the current password
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw new BadRequestError("Incorrect current password");
   }
 
-  if (req.body.image) {
-    const imagePath = req.body.image;
-    try {
-      const result = await cloudinary.v2.uploader.upload(imagePath, {
-        folder: "PenPages/User/Avatar/",
-        use_filename: true,
-      });
-      req.body.imageCloudinaryUrl = result.url;
-      const imageName = path.basename(req.body.image);
-      req.body.image = imageName;
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestError({ "error uploading image on cloudinary": error });
-    }
-  }
+  // If the current password is correct, update the user's password
+  user.password = newPassword; // Assuming newPassword is already hashed
 
-  user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true, runValidators: true });
+  // Save the updated user
+  await user.save();
 
-  res.status(StatusCodes.OK).json({ user });
+  // Return success response
+  res.status(StatusCodes.OK).json({ message: "Password updated successfully" });
 };
 
 export const deleteUser = async (req, res) => {
