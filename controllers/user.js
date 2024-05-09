@@ -170,7 +170,7 @@ export const deleteUser = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
-  res.status(StatusCodes.OK).send("Your account has been disabled");
+  res.status(StatusCodes.OK).json({ success: "Account disabled successfully" });
 };
 
 export const sendForgotPasswordLink = async (req, res) => {
