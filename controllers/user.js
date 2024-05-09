@@ -161,7 +161,7 @@ export const updateUser = async (req, res) => {
   await user.save();
 
   // Return success response
-  res.status(StatusCodes.OK).json({ message: "Password updated successfully" });
+  res.status(StatusCodes.OK).json({ success: "Profile updated successfully" });
 };
 
 export const deleteUser = async (req, res) => {

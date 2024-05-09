@@ -82,16 +82,50 @@ export const getPersonalisedPosts = async (req, res) => {
   const userId = req.user.userId;
   let allPosts = [];
   let allFollowedAuthors = [];
+
+  // Get all authors followed by the user
   const followedAuthors = await Follower.find({ follower: userId });
   followedAuthors.forEach(aFollowedAuthor => {
     allFollowedAuthors.push(aFollowedAuthor.follower);
   });
+
+  // Loop through each followed author to fetch their posts
   for (let i = 0; i < allFollowedAuthors.length; i++) {
-    const posts = await Post.find({ author: allFollowedAuthors[i] });
-    allPosts = allPosts.concat(posts);
+    const authorId = allFollowedAuthors[i];
+
+    // Fetch posts for the current followed author
+    const posts = await Post.find({ author: authorId });
+
+    // Loop through each post to get likes
+    for (let j = 0; j < posts.length; j++) {
+      const post = posts[j];
+
+      // Fetch likes for the current post
+      const likes = await getLikesForPost(post._id);
+
+      // Add likes to the post object
+      post.likes = likes;
+
+      // Add the post to the list of all posts
+      allPosts.push(post);
+    }
   }
+
+  // Return all posts with likes in the response
   res.status(StatusCodes.OK).json({ allPosts });
 };
+
+// Function to get likes for a post
+const getLikesForPost = async postId => {
+  try {
+    const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
+    return likes;
+  } catch (error) {
+    console.error(`Error fetching likes for post ${postId}:`, error);
+    return [];
+  }
+};
+
 
 export const getPost = async (req, res) => {
   const { postId } = req.params;
