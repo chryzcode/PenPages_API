@@ -6,8 +6,6 @@ import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/
 import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
-import cloudinary from "cloudinary";
-import path from "path";
 
 const uniqueID = uuidv4();
 const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
@@ -136,31 +134,44 @@ export const getUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 
-export const updateUser = async (req, res) => {
-  const { userId } = req.user;
+export const updatePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  // Find the user by userId
-  const user = await User.findById(userId);
+  let user = await User.findById(userId);
 
   // If user not found, throw an error
   if (!user) {
     throw new NotFoundError(`User with id ${userId} does not exist`);
   }
 
-  // Validate the current password
-  if (currentPassword) {
-    const isMatch = await user.comparePassword(currentPassword);
-    if (!isMatch) {
-      throw new BadRequestError("Incorrect current password");
-    }
-
-    // If the current password is correct, update the user's password
-    user.password = newPassword; // Assuming newPassword is already hashed
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw new BadRequestError("Incorrect current password");
   }
-  // Save the updated user
-  await user.save();
 
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+  user = await user.save();
+};
+
+export const updateUser = async (req, res) => {
+  const { userId } = req.user;
+
+  // Find the user by userId
+  let user = await User.findById(userId);
+
+  // If user not found, throw an error
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exist`);
+  }
+
+  // Save the updated user
+  user = await User.findOneAndUpdate({ _id: userId }, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  console.log(user);
   // Return success response
   res.status(StatusCodes.OK).json({ success: "Profile updated successfully" });
 };
