@@ -149,14 +149,15 @@ export const updateUser = async (req, res) => {
   }
 
   // Validate the current password
-  const isMatch = await user.comparePassword(currentPassword);
-  if (!isMatch) {
-    throw new BadRequestError("Incorrect current password");
+  if (currentPassword) {
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      throw new BadRequestError("Incorrect current password");
+    }
+
+    // If the current password is correct, update the user's password
+    user.password = newPassword; // Assuming newPassword is already hashed
   }
-
-  // If the current password is correct, update the user's password
-  user.password = newPassword; // Assuming newPassword is already hashed
-
   // Save the updated user
   await user.save();
 
