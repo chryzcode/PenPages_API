@@ -12,14 +12,8 @@ export const transporter = nodemailer.createTransport({
   secure: true,
 });
 
-
-
-export const generateToken = (uniqueID) => {
-  const expiry = "10m";
+export const generateToken = uniqueID => {
+  const expiry = "20m";
   const secret_key = process.env.JWT_SECRET;
   return jwt.sign({ id: uniqueID }, secret_key, { expiresIn: expiry });
 };
-
-
-
-
