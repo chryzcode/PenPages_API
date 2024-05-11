@@ -135,6 +135,8 @@ export const getUser = async (req, res) => {
 };
 
 export const updatePassword = async (req, res) => {
+  const  userId  = req.user;
+
   const { currentPassword, newPassword } = req.body;
 
   let user = await User.findById(userId);
@@ -149,9 +151,9 @@ export const updatePassword = async (req, res) => {
     throw new BadRequestError("Incorrect current password");
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashedPassword;
+  user.password = newPassword;
   user = await user.save();
+  res.status(StatusCodes.OK).json({ success: "Password updated successfully" });
 };
 
 export const updateUser = async (req, res) => {
