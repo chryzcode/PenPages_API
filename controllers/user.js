@@ -135,7 +135,7 @@ export const getUser = async (req, res) => {
 };
 
 export const updatePassword = async (req, res) => {
-  const  userId  = req.user;
+  const { userId } = req.user;
 
   const { currentPassword, newPassword } = req.body;
 
