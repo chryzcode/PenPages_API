@@ -54,7 +54,7 @@ export const userFollowingCount = async (req, res) => {
   if (!user) {
     throw new NotFoundError(`Users does not exist`);
   }
-  const followingCount = await Follower.find({ follower: user._id });
+  const followingCount = (await Follower.find({ follower: user._id })).length;
   res.status(StatusCodes.OK).json({ followingCount });
 };
 
