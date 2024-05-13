@@ -52,7 +52,7 @@ export const userFollowingCount = async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({ username: username });
   if (!user) {
-    throw new NotFoundError(`Users does not exist`);
+    throw new NotFoundError(`User does not exist`);
   }
   const followingCount = (await Follower.find({ follower: user._id })).length;
   res.status(StatusCodes.OK).json({ followingCount });
@@ -62,7 +62,7 @@ export const userFollowings = async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({ username: username });
   if (!user) {
-    throw new NotFoundError(`Users does not exist`);
+    throw new NotFoundError(`User does not exist`);
   }
   const followings = await Follower.find({ follower: user._id }).populate(
     "follower",
