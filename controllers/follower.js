@@ -58,6 +58,19 @@ export const userFollowingCount = async (req, res) => {
   res.status(StatusCodes.OK).json({ followingCount });
 };
 
+export const userFollowings = async (req, res) => {
+  const { username } = req.params;
+  const user = await User.findOne({ username: username });
+  if (!user) {
+    throw new NotFoundError(`Users does not exist`);
+  }
+  const followings = await Follower.find({ follower: user._id }).populate(
+    "follower",
+    "username firstName lastName imageCloudinaryUrl _id"
+  );
+  res.status(StatusCodes.OK).json({ followings });
+};
+
 export const userFollowers = async (req, res) => {
   const { userId } = req.params;
   const user = await User.findOne({ _id: userId });
