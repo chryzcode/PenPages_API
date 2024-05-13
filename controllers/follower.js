@@ -65,7 +65,7 @@ export const userFollowings = async (req, res) => {
     throw new NotFoundError(`User does not exist`);
   }
   const followings = await Follower.find({ follower: user._id }).populate(
-    "follower",
+    "user",
     "username firstName lastName imageCloudinaryUrl _id"
   );
   res.status(StatusCodes.OK).json({ followings });
