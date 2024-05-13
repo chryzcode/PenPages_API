@@ -1,6 +1,12 @@
 import express from "express";
 
-import { followUnfollowUser, userFollowersCount, userFollowers, userFollowingCount } from "../controllers/follower.js";
+import {
+  followUnfollowUser,
+  userFollowersCount,
+  userFollowers,
+  userFollowingCount,
+  userFollowings,
+} from "../controllers/follower.js";
 
 import authenticateUser from "../middleware/authentication.js";
 
@@ -10,5 +16,6 @@ router.route("/follow-unfollow/:userId").post(authenticateUser, followUnfollowUs
 router.route("/count/:userId").get(userFollowersCount);
 router.route("/:userId/followers").get(userFollowers);
 router.route("/:username/following/count").get(userFollowingCount);
+router.route("/:username/followings").get(userFollowings);
 
 export default router;
