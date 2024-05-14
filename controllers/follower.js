@@ -12,14 +12,14 @@ export const followUnfollowUser = async (req, res) => {
   const { userId } = req.params;
   const follower = await User.findOne({ _id: followerId });
   if (!follower) {
-    throw new NotFoundError(`user/ follower with ${followerId} does not exist`);
+    throw new NotFoundError(`user does not exist`);
   }
   const user = await User.findOne({ _id: userId });
   if (!user) {
-    throw new NotFoundError(`user/ author with ${userId} does not exist`);
+    throw new NotFoundError(`user does not exist`);
   }
   if (follower.id == user.id) {
-    throw new BadRequestError("You can not follow/ unfollow yourself");
+    throw new BadRequestError("You can not follow yourself");
   }
   req.body.user = userId;
   req.body.follower = followerId;
@@ -35,7 +35,7 @@ export const followUnfollowUser = async (req, res) => {
       url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
     });
   }
-  res.status(StatusCodes.OK).send();
+  res.status(StatusCodes.OK).json({success: "Followed user succ"});
 };
 
 export const userFollowersCount = async (req, res) => {
