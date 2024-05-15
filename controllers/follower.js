@@ -7,7 +7,7 @@ import "dotenv/config";
 
 const DOMAIN = process.env.DOMAIN;
 
-export const followUnfollowUser = async (req, res) => {
+export const followUser = async (req, res) => {
   const followerId = req.user.userId;
   const { userId } = req.params;
   const follower = await User.findOne({ _id: followerId });
@@ -23,19 +23,37 @@ export const followUnfollowUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
-  const followerObj = await Follower.findOne({ user: userId, follower: followerId });
-  if (followerObj) {
-    await Follower.deleteOne({ user: userId, follower: followerId });
-  } else {
-    await Follower.create({ ...req.body });
-    Notification.create({
-      fromUser: followerId,
-      toUser: userId,
-      info: `${follower.username} just followed you`,
-      url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
-    });
+  await Follower.create({ ...req.body });
+  Notification.create({
+    fromUser: followerId,
+    toUser: userId,
+    info: `${follower.username} just followed you`,
+    url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
+  });
+
+  res.status(StatusCodes.OK).json({ success: "Followed user successfully" });
+};
+
+export const unfollowUser = async (req, res) => {
+  const followerId = req.user.userId;
+  const { userId } = req.params;
+  const follower = await User.findOne({ _id: followerId });
+  if (!follower) {
+    throw new NotFoundError(`user does not exist`);
   }
-  res.status(StatusCodes.OK).json({success: "Followed user succ"});
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`user does not exist`);
+  }
+  if (follower.id == user.id) {
+    throw new BadRequestError("You can not follow yourself");
+  }
+  req.body.user = userId;
+  req.body.follower = followerId;
+
+  await Follower.deleteOne({ user: userId, follower: followerId });
+  
+  res.status(StatusCodes.OK).json({ success: "Unfollowed user successfully" });
 };
 
 export const userFollowersCount = async (req, res) => {
