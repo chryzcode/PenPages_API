@@ -126,7 +126,6 @@ const getLikesForPost = async postId => {
   }
 };
 
-
 export const getPost = async (req, res) => {
   const { postId } = req.params;
   let post = await Post.findOne({ _id: postId })
@@ -243,6 +242,28 @@ export const likePost = async (req, res) => {
   res.status(StatusCodes.OK).json({ postLikesCount: likes });
 };
 
+export const unlikePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+
+  const post = await Post.findOne({ _id: postId });
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
+  if (!post) {
+    throw new NotFoundError(`Post with id ${postId} does not exists`);
+  }
+  if (user.id == post.author) {
+    throw new BadRequestError("You can not unlike your own post");
+  }
+
+  await postLikes.findOneAndDelete({ post: postId, user: userId });
+
+  const likes = (await postLikes.find({ post: postId })).length;
+  res.status(StatusCodes.OK).json({ postLikesCount: likes });
+};
+
 export const aPostLikes = async (req, res) => {
   const { postId } = req.params;
   const post = await Post.findOne({ _id: postId });
@@ -264,7 +285,7 @@ export const getAUserPosts = async (req, res) => {
   let posts = await Post.find({ author: user._id })
     .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
     .populate("tag");
-  
+
   const getLikesForPost = async postId => {
     try {
       const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");

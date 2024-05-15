@@ -2,6 +2,7 @@ import express from "express";
 import {
   createPost,
   likePost,
+  unlikePost,
   updatePost,
   getPost,
   getAllPosts,
@@ -21,5 +22,6 @@ router.route("/:username/posts").get(getAUserPosts);
 router.route("/user/personalised/posts").get(authenticateUser, getPersonalisedPosts);
 router.route("/:postId").get(getPost).put(authenticateUser, updatePost).delete(authenticateUser, deletePost);
 router.route("/like/:postId").post(authenticateUser, likePost).get(aPostLikes);
+router.route("/unlike/:postId").post(authenticateUser, unlikePost);
 
 export default router;
