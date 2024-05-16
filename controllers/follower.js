@@ -23,6 +23,10 @@ export const followUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
+  const follower = Fawait ollower.findOne({ user: userId, follower: followerId });
+  if (follower) {
+    throw new BadRequestError(`Following user before`)
+  }
   await Follower.create({ ...req.body });
   Notification.create({
     fromUser: followerId,
