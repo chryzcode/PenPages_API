@@ -23,8 +23,8 @@ export const followUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
-  const follower = Fawait ollower.findOne({ user: userId, follower: followerId });
-  if (follower) {
+  const following = await Follower.findOne({ user: userId, follower: followerId });
+  if (following) {
     throw new BadRequestError(`Following user before`)
   }
   await Follower.create({ ...req.body });
@@ -54,6 +54,11 @@ export const unfollowUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
+
+  const following = await Follower.findOne({ user: userId, follower: followerId });
+  if (following) {
+    throw new BadRequestError(`Not following user before`);
+  }
 
   await Follower.deleteOne({ user: userId, follower: followerId });
   
