@@ -23,10 +23,7 @@ export const followUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
-  const following = await Follower.findOne({ user: userId, follower: followerId });
-  if (following) {
-    throw new BadRequestError(`Following user before`);
-  }
+  
   await Follower.create({ ...req.body });
   Notification.create({
     fromUser: followerId,
@@ -54,11 +51,6 @@ export const unfollowUser = async (req, res) => {
   }
   req.body.user = userId;
   req.body.follower = followerId;
-
-  const following = await Follower.findOne({ user: userId, follower: followerId });
-  if (!following) {
-    throw new BadRequestError(`Not following user before`);
-  }
 
   await Follower.deleteOne({ user: userId, follower: followerId });
 
