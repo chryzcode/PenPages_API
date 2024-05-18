@@ -139,7 +139,9 @@ export const getPost = async (req, res) => {
   // Function to get likes for the post
   const getLikesForPost = async postId => {
     try {
-      const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
+      const likes = await postLikes
+        .find({ post: postId })
+        .populate("user", "username firstName imageCloudinaryUrl lastName _id");
       return likes;
     } catch (error) {
       console.error(`Error fetching likes for post ${postId}:`, error);
@@ -149,7 +151,10 @@ export const getPost = async (req, res) => {
 
   const getPostComments = async postId => {
     try {
-      const comments = await Comment.find({ post: postId }).populate("user", "username firstName lastName _id");
+      const comments = await Comment.find({ post: postId }).populate(
+        "user",
+        "username firstName imageCloudinaryUrl lastName _id"
+      );
       return comments;
     } catch (error) {
       console.error(`Error fetching comment for post ${postId}:`, error);
