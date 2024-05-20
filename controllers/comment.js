@@ -105,7 +105,7 @@ export const deleteComment = async (req, res) => {
   if (!comment) {
     throw new NotFoundError(`Comment with id ${commentId} does not exist`);
   }
-  res.status(StatusCodes.OK).send();
+  res.status(StatusCodes.OK).json({ success: "Comment deleted successfully" });
 };
 
 export const deleteReplyComment = async (req, res) => {
