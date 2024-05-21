@@ -64,7 +64,9 @@ export const getPostAllComments = async (req, res) => {
 
 export const getPostAllReplyComments = async (req, res) => {
   const { commentId } = req.params;
-  const replycomments = await replyComment.find({ comment: commentId });
+  const replycomments = await replyComment
+    .find({ comment: commentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
   res.status(StatusCodes.OK).json({ replycomments });
 };
 
