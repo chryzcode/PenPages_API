@@ -24,6 +24,6 @@ router
   .put(authenticateUser, updateReplyComment)
   .delete(authenticateUser, deleteReplyComment);
 router.route("/like/:commentId").post(authenticateUser, likePostComment);
-router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment).post(getAReplyCommentLikes);
+router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment).get(getAReplyCommentLikes);
 
 export default router;
