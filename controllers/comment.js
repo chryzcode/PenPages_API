@@ -195,3 +195,15 @@ export const getAReplyCommentLikes = async (req, res) => {
     .populate("user", "username firstName lastName imageCloudinaryUrl _id");
   res.status(StatusCodes.OK).json({ replyCommentLikes });
 };
+
+export const getACommentLikes = async (req, res) => {
+  const { commentId } = req.params;
+  const comment = await Comment.findOne({ _id: commentId });
+  if (!comment) {
+    throw new NotFoundError(`Comment does not exists`);
+  }
+  const commentLikes = await likeComment
+    .find({ comment: commentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+  res.status(StatusCodes.OK).json({ commentLikes });
+};
