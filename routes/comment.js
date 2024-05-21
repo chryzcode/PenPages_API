@@ -10,6 +10,7 @@ import {
   deleteReplyComment,
   likePostComment,
   likeAReplyComment,
+  getAReplyCommentLikes,
 } from "../controllers/comment.js";
 import authenticateUser from "../middleware/authentication.js";
 
@@ -23,6 +24,6 @@ router
   .put(authenticateUser, updateReplyComment)
   .delete(authenticateUser, deleteReplyComment);
 router.route("/like/:commentId").post(authenticateUser, likePostComment);
-router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment);
+router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment).post(getAReplyCommentLikes);
 
 export default router;
