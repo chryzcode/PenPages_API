@@ -35,6 +35,24 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+// Define a whitelist of allowed origins
+const whitelist = ["http://localhost:3000", "https://penpages.netlify.app"];
+
+// Define the CORS options
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+// Enable CORS with the specified options
+app.use(cors(corsOptions));
+
 app.get("/", (req, res) => {
   res.send(
     `Penpages API. <p>Checkout the <a href="https://documenter.getpostman.com/view/31014226/2sA2xnxpqp">PenPages API Documentation</a></p>`
