@@ -35,16 +35,16 @@ export const createReplyComment = async (req, res) => {
   req.body.comment = commentId;
   req.body.user = req.user.userId;
   const user = await User.findOne({ _id: req.user.userId });
-  const comment = await Comment.findOne({ _id: commentId });
+  const comment = (await Comment.findOne({ _id: commentId })) || (await replyComment.findOne({ _id: commentId }));
   if (!user) {
-    throw new NotFoundError(`User with id ${req.user.userId} does not exists`);
+    throw new NotFoundError(`User with does not exists`);
   }
   if (!comment) {
     throw new NotFoundError(`Post with id ${commentId} does not exists`);
   }
   const post = await Post.findOne({ _id: comment.post });
   if (!post) {
-    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+    throw new NotFoundError(`Post does not exists`);
   }
   const aComment = await replyComment.create({ ...req.body });
   Notification.create({
@@ -117,7 +117,7 @@ export const deleteReplyComment = async (req, res) => {
   if (!comment) {
     throw new NotFoundError(`Comment with id ${replyCommentId} does not exist`);
   }
-  res.status(StatusCodes.OK).send();
+  res.status(StatusCodes.OK).json({ success: "Reply deleted successfully" });
 };
 
 export const likePostComment = async (req, res) => {
