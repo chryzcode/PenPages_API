@@ -3,6 +3,8 @@ import {
   createComment,
   createReplyComment,
   getCommentsReplies,
+  unlikeAReplyComment,
+  unlikePostComment,
   getPostAllComments,
   updateComment,
   updateReplyComment,
@@ -25,6 +27,8 @@ router
   .put(authenticateUser, updateReplyComment)
   .delete(authenticateUser, deleteReplyComment);
 router.route("/like/:commentId").post(authenticateUser, likePostComment).get(getACommentLikes);
+router.route("/unlike/:commentId").post(authenticateUser, unlikePostComment);
+router.route("/unlike/reply/:replyCommentId").post(authenticateUser, unlikeAReplyComment);
 router.route("/like/reply/:replyCommentId").post(authenticateUser, likeAReplyComment).get(getAReplyCommentLikes);
 
 export default router;

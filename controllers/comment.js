@@ -127,14 +127,14 @@ export const likePostComment = async (req, res) => {
   const comment = await Comment.findOne({ _id: commentId });
   const user = await User.findOne({ _id: userId });
   if (!user) {
-    throw new NotFoundError(`User with id ${userId} does not exists`);
+    throw new NotFoundError(`User does not exists`);
   }
   if (!comment) {
-    throw new NotFoundError(`Comment with id ${commentId} does not exists`);
+    throw new NotFoundError(`Comment does not exists`);
   }
   const post = await Post.findOne({ _id: comment.post });
   if (!post) {
-    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+    throw new NotFoundError(`Post does not exists`);
   }
   if (liked) {
     await likeComment.findOneAndDelete({ comment: commentId, user: userId });
@@ -147,8 +147,35 @@ export const likePostComment = async (req, res) => {
       url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   }
-  const likes = (await likeComment.find({ comment: commentId })).length;
-  res.status(StatusCodes.OK).json({ commentLikesCount: likes });
+  const commentLikes = await likeComment
+    .find({ comment: commentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+  res.status(StatusCodes.OK).json({ commentLikes });
+};
+
+export const unlikePostComment = async (req, res) => {
+  const { commentId } = req.params;
+  const { userId } = req.user;
+  const liked = await likeComment.findOne({ comment: commentId, user: userId });
+  const comment = await Comment.findOne({ _id: commentId });
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User does not exists`);
+  }
+  if (!comment) {
+    throw new NotFoundError(`Comment does not exists`);
+  }
+  const post = await Post.findOne({ _id: comment.post });
+  if (!post) {
+    throw new NotFoundError(`Post does not exists`);
+  }
+  if (liked) {
+    await likeComment.findOneAndDelete({ comment: commentId, user: userId });
+  }
+  const commentLikes = await likeComment
+    .find({ comment: commentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+  res.status(StatusCodes.OK).json({ commentLikes });
 };
 
 export const likeAReplyComment = async (req, res) => {
@@ -182,7 +209,38 @@ export const likeAReplyComment = async (req, res) => {
       url: `${DOMAIN}/api/v1/post/${post.id}`,
     });
   }
-  const likes = (await likeReplyComment.find({ replyComment: replyCommentId })).length;
+  const likes = await likeReplyComment
+    .find({ replyComment: replyCommentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+  res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
+};
+
+export const unlikeAReplyComment = async (req, res) => {
+  const { replyCommentId } = req.params;
+  const { userId } = req.user;
+  const aReplyComment = await replyComment.findOne({ _id: replyCommentId });
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new NotFoundError(`User with id ${userId} does not exists`);
+  }
+  if (!aReplyComment) {
+    throw new NotFoundError(`Reply Comment with id ${replyCommentId} does not exists`);
+  }
+  const comment = await Comment.findOne({ _id: aReplyComment.comment });
+  if (!comment) {
+    throw new NotFoundError(`Comment with id ${comment.id} does not exists`);
+  }
+  const post = await Post.findOne({ _id: comment.post });
+  if (!post) {
+    throw new NotFoundError(`Post with id ${post.id} does not exists`);
+  }
+  const liked = await likeReplyComment.findOne({ replyComment: replyCommentId, user: userId });
+  if (liked) {
+    await likeReplyComment.findOneAndDelete({ replyComment: replyCommentId, user: userId });
+  }
+  const likes = await likeReplyComment
+    .find({ replyComment: replyCommentId })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
   res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
 };
 
