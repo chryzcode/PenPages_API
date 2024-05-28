@@ -36,7 +36,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Define a whitelist of allowed origins
-const whitelist = ["http://localhost:3000", "https://penpages.netlify.app"];
+const whitelist = [process.env.FRONTEND_LOCALHOST, "https://penpages.netlify.app"];
 
 // Define the CORS options
 const corsOptions = {
@@ -48,6 +48,9 @@ const corsOptions = {
     }
   },
   optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 // Enable CORS with the specified options
