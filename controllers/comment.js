@@ -46,7 +46,10 @@ export const createReplyComment = async (req, res) => {
   if (!post) {
     throw new NotFoundError(`Post does not exists`);
   }
-  const aComment = await replyComment.create({ ...req.body });
+  let aComment = await replyComment.create({ ...req.body });
+  aComment = await replyComment
+    .findOne({ _id: aComment.id })
+    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
   Notification.create({
     fromUser: user.id,
     toUser: comment.user,
