@@ -36,7 +36,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Define a whitelist of allowed origins
-const whitelist = [process.env.FRONTEND_LOCALHOST, "https://penpages.netlify.app"];
+const whitelist = ["http://localhost:3000", "https://penpages.netlify.app"];
 
 // Define the CORS options
 const corsOptions = {
@@ -53,7 +53,7 @@ const corsOptions = {
 };
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", `${process.env.FRONTEND_LOCALHOST}, https://penpages.netlify.app`);
+  res.header("Access-Control-Allow-Origin", `http://localhost:3000, https://penpages.netlify.app`);
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Access-Control-Allow-Credentials", "true");
