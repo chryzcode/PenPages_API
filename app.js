@@ -49,9 +49,17 @@ const corsOptions = {
   },
   optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", `${process.env.FRONTEND_LOCALHOST}, https://penpages.netlify.app`);
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  // Pass to next layer of middleware
+  next();
+});
 
 // Enable CORS with the specified options
 app.use(cors(corsOptions));
