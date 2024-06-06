@@ -24,6 +24,13 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    type: {
+      type: String,
+      enum: ["post", "profile", ],
+    },
+    info_id: {
+      type: String,
+    },
   },
   {
     timestamps: true,

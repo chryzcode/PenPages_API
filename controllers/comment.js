@@ -25,7 +25,9 @@ export const createComment = async (req, res) => {
     fromUser: user.id,
     toUser: post.author,
     info: `${user.username} just made a comment on ${post.title}`,
-    url: `${DOMAIN}/api/v1/post/${post.id}`,
+    url: `${DOMAIN}/post/${post.id}`,
+    type: "post",
+    info_id: post.id,
   });
   res.status(StatusCodes.CREATED).json({ comment });
 };
@@ -54,7 +56,9 @@ export const createReplyComment = async (req, res) => {
     fromUser: user.id,
     toUser: comment.user,
     info: `${user.username} just made a reply to your comment on ${post.title}`,
-    url: `${DOMAIN}/api/v1/post/${post.id}`,
+    url: `${DOMAIN}/post/${post.id}`,
+    type: "post",
+    info_id: post.id,
   });
   res.status(StatusCodes.CREATED).json({ aComment });
 };
@@ -147,7 +151,9 @@ export const likePostComment = async (req, res) => {
       fromUser: user.id,
       toUser: comment.user,
       info: `${user.username} just liked your comment on ${post.title}`,
-      url: `${DOMAIN}/api/v1/post/${post.id}`,
+      url: `${DOMAIN}/post/${post.id}`,
+      type: "post",
+      info_id: post.id,
     });
   }
   const commentLikes = await likeComment
@@ -209,7 +215,9 @@ export const likeAReplyComment = async (req, res) => {
       fromUser: user.id,
       toUser: aReplyComment.user,
       info: `${user.username} just liked your reply on a ${post.title} comment`,
-      url: `${DOMAIN}/api/v1/post/${post.id}`,
+      url: `${DOMAIN}/post/${post.id}`,
+      type: "post",
+      info_id: post.id,
     });
   }
   const likes = await likeReplyComment
