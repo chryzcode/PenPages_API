@@ -46,7 +46,9 @@ export const createPost = async (req, res) => {
       fromUser: post.author,
       toUser: aFollower.follower,
       info: `${author.username} just published a post ${post.title}`,
-      url: `${DOMAIN}/api/v1/post/${post.id}`,
+      url: `${DOMAIN}/post/${post.id}`,
+      type: "post",
+      info_id: post.id,
     });
   });
   res.status(StatusCodes.CREATED).json({ post });
@@ -240,7 +242,9 @@ export const likePost = async (req, res) => {
       fromUser: user.id,
       toUser: post.author,
       info: `${user.username} just liked your post ${post.title}`,
-      url: `${DOMAIN}/api/v1/post/${post.id}`,
+      url: `${DOMAIN}/post/${post.id}`,
+      type: "post",
+      info_id: post.id,
     });
   }
   const likes = (await postLikes.find({ post: postId })).length;

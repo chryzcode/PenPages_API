@@ -30,6 +30,8 @@ export const followUser = async (req, res) => {
     toUser: userId,
     info: `${follower.username} just followed you`,
     url: `${DOMAIN}/api/v1/user/profile/${follower.username}`,
+    type: "profile",
+    info_id: follower.username,
   });
 
   res.status(StatusCodes.OK).json({ success: "Followed user successfully" });
