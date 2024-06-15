@@ -25,13 +25,12 @@ const port = process.env.PORT || 5000;
 app.set("trust proxy", 1);
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, //15 mins
-    max: 100, //limit each ip to 100 requests per windowsMs
+    windowMs: 15 * 60 * 1000, // 15 mins
+    max: 100, // limit each IP to 100 requests per windowMs
   })
 );
 app.use(express.json());
 app.use(helmet());
-app.use(cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
@@ -51,15 +50,6 @@ const corsOptions = {
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
   credentials: true,
 };
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", `http://localhost:3000, https://penpages.netlify.app`);
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  // Pass to next layer of middleware
-  next();
-});
 
 // Enable CORS with the specified options
 app.use(cors(corsOptions));
