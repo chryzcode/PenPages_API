@@ -2,7 +2,6 @@ import "dotenv/config";
 import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
-
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
@@ -26,7 +25,7 @@ app.set("trust proxy", 1);
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 mins
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 100, // limit each ip to 100 requests per windowMs
   })
 );
 app.use(express.json());
@@ -40,7 +39,7 @@ const whitelist = ["http://localhost:3000", "https://penpages.netlify.app"];
 // Define the CORS options
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || whitelist.indexOf(origin) !== -1) {
+    if (!origin || whitelist.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -53,6 +52,15 @@ const corsOptions = {
 
 // Enable CORS with the specified options
 app.use(cors(corsOptions));
+
+// Custom middleware to add CORS headers
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Use a wildcard or specify the allowed origins
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send(
