@@ -82,38 +82,23 @@ export const getAllPosts = async (req, res) => {
 
 export const getPersonalisedPosts = async (req, res) => {
   const userId = req.user.userId;
-  let allPosts = [];
-  let allFollowedAuthors = [];
 
-  // Get all authors followed by the user
-  const followedAuthors = await Follower.find({ follower: userId });
-  followedAuthors.forEach(aFollowedAuthor => {
-    allFollowedAuthors.push(aFollowedAuthor.follower);
-  });
+  // Fetch followed authors
+  const followedAuthors = await Follower.find({ follower: userId }).select("user");
+  const followedAuthorIds = followedAuthors.map(follower => follower.user);
 
-  // Loop through each followed author to fetch their posts
-  for (let i = 0; i < allFollowedAuthors.length; i++) {
-    const authorId = allFollowedAuthors[i];
+  let allPosts = await Post.find({ author: { $in: followedAuthorIds } })
+    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate("tag")
+    .sort("createdAt");
 
-    // Fetch posts for the current followed author
-    const posts = await Post.find({ author: authorId });
-
-    // Loop through each post to get likes
-    for (let j = 0; j < posts.length; j++) {
-      const post = posts[j];
-
-      // Fetch likes for the current post
+  allPosts = await Promise.all(
+    allPosts.map(async post => {
       const likes = await getLikesForPost(post._id);
+      return { ...post.toObject(), likes };
+    })
+  );
 
-      // Add likes to the post object
-      post.likes = likes;
-
-      // Add the post to the list of all posts
-      allPosts.push(post);
-    }
-  }
-
-  // Return all posts with likes in the response
   res.status(StatusCodes.OK).json({ allPosts });
 };
 
