@@ -22,21 +22,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.set("trust proxy", 1);
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 mins
-    max: 100, // limit each ip to 100 requests per windowMs
-  })
-);
-app.use(express.json());
-app.use(helmet());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 
-// Define a whitelist of allowed origins
 const whitelist = ["http://localhost:3000", "https://penpages.netlify.app"];
-
-// Define the CORS options
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || whitelist.includes(origin)) {
@@ -45,22 +32,23 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
   credentials: true,
 };
 
-// Enable CORS with the specified options
 app.use(cors(corsOptions));
+app.use(express.json());
+app.use(helmet());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-// Custom middleware to add CORS headers
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // Use a wildcard or specify the allowed origins
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 mins
+    max: 1000, // Adjust the limit if needed
+  })
+);
 
 app.get("/", (req, res) => {
   res.send(
