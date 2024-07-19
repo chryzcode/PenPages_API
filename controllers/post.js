@@ -1,57 +1,75 @@
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import { Post, postLikes } from "../models/post.js";
-import cloudinary from "cloudinary";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
 import Follower from "../models/follower.js";
 import { Comment } from "../models/comment.js";
-import path from "path";
 import "dotenv/config.js";
+import { uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
 const DOMAIN = process.env.DOMAIN;
 
-const options = {
-  use_filename: true,
-  unique_filename: false,
-  overwrite: true,
-};
+
 
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
-  const imagePath = req.body.image;
+
   try {
-    const result = await cloudinary.v2.uploader.upload(imagePath, {
-      folder: "PenPages/Post/Image/",
-      use_filename: true,
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      req.body.image = result.secure_url; // Set Cloudinary URL to the image field
+    }
+    const post = await Post.create(req.body);
+
+    // Notify followers
+    const author = await User.findOne({ _id: post.author });
+    if (!author) {
+      throw new NotFoundError(`User/ Author with id ${post.author} does not exist`);
+    }
+    const followers = await Follower.find({ user: post.author });
+    followers.forEach(async aFollower => {
+      await Notification.create({
+        fromUser: post.author,
+        toUser: aFollower.follower,
+        info: `${author.username} just published a post ${post.title}`,
+        url: `${DOMAIN}/post/${post.id}`,
+        type: "post",
+        info_id: post.id,
+      });
     });
-    req.body.imageCloudinaryUrl = result.url;
-    const imageName = path.basename(req.body.image);
-    req.body.image = imageName;
+
+    res.status(StatusCodes.CREATED).json({ post });
   } catch (error) {
-    console.log(error);
-    throw new BadRequestError("error uploading image on cloudinary");
+    console.error(error);
+    res.status(400).json({ error: error.message });
   }
-  if (!req.body.imageCloudinaryUrl) {
-    throw new BadRequestError("error uploading image on cloudinary");
-  }
-  const post = await Post.create({ ...req.body });
-  const author = await User.findOne({ _id: post.author });
-  if (!author) {
-    throw new NotFoundError(`User/ Author with id ${post.author} does not exist`);
-  }
-  const followers = await Follower.find({ user: post.author });
-  followers.forEach(aFollower => {
-    Notification.create({
-      fromUser: post.author,
-      toUser: aFollower.follower,
-      info: `${author.username} just published a post ${post.title}`,
-      url: `${DOMAIN}/post/${post.id}`,
-      type: "post",
-      info_id: post.id,
+};
+
+export const updatePost = async (req, res) => {
+  const { postId } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      req.body.image = result.secure_url; // Set Cloudinary URL to the image field
+    }
+
+    const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
+      new: true,
+      runValidators: true,
     });
-  });
-  res.status(StatusCodes.CREATED).json({ post });
+
+    if (!post) {
+      throw new NotFoundError(`Post with id ${postId} does not exist`);
+    }
+
+    res.status(StatusCodes.OK).json({ post });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: error.message });
+  }
 };
 
 export const getAllPosts = async (req, res) => {
@@ -163,36 +181,7 @@ export const getUserPosts = async (req, res) => {
   res.status(StatusCodes.OK).json({ userPosts });
 };
 
-export const updatePost = async (req, res) => {
-  const { postId } = req.params;
-  const userId = req.user.userId;
-  const imagePath = req.files.fileToUpload.path;
 
-  if (imagePath) {
-    try {
-      const result = await cloudinary.v2.uploader.upload(imagePath, {
-        folder: "PenPages/Post/Image",
-        use_filename: true,
-      });
-
-      req.body.imageCloudinaryUrl = result.url;
-      const imageName = path.basename(req.files.fileToUpload.path);
-      req.body.image = imageName;
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestError("error uploading image on cloudinary");
-    }
-  }
-
-  const post = await Post.findOneAndUpdate({ _id: postId, author: userId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!post) {
-    throw new NotFoundError(`Post with id ${postId} does not exist`);
-  }
-  res.status(StatusCodes.OK).json({ post });
-};
 
 export const deletePost = async (req, res) => {
   const { postId } = req.params;

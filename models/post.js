@@ -12,9 +12,6 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: [true, "Image field is required"],
     },
-    imageCloudinaryUrl: {
-      type: String,
-    },
     body: {
       type: String,
       required: [true, "Body field is compulsory"],

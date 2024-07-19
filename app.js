@@ -46,7 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 mins
-    max: 1000, // Adjust the limit if needed
+    max: 2000, // Adjust the limit if needed
   })
 );
 
