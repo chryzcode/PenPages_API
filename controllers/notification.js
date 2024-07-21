@@ -12,8 +12,8 @@ export const markNotificationRead = async (req, res) => {
     { read: true },
     { runValidators: true, new: true }
   )
-    .populate("fromUser", "username firstName lastName imageCloudinaryUrl _id")
-    .populate("toUser", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("fromUser", "username firstName lastName image _id")
+    .populate("toUser", "username firstName lastName image _id");
 
   if (!notification) {
     throw new NotFoundError(`Notification with ${notificationId} tied to this user does not exist`);
@@ -25,24 +25,24 @@ export const markNotificationRead = async (req, res) => {
 export const allNotifications = async (req, res) => {
   const userId = req.user.userId;
   const notifications = await Notification.find({ toUser: userId })
-    .populate("fromUser", "username firstName lastName imageCloudinaryUrl _id")
-    .populate("toUser", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("fromUser", "username firstName lastName image _id")
+    .populate("toUser", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allUnreadNotifications = async (req, res) => {
   const userId = req.user.userId;
   const notifications = await Notification.find({ toUser: userId, read: false })
-    .populate("fromUser", "username firstName lastName imageCloudinaryUrl _id")
-    .populate("toUser", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("fromUser", "username firstName lastName image _id")
+    .populate("toUser", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ notifications });
 };
 
 export const allReadNotifications = async (req, res) => {
   const userId = req.user.userId;
   const notifications = await Notification.find({ toUser: userId, read: true })
-    .populate("fromUser", "username firstName lastName imageCloudinaryUrl _id")
-    .populate("toUser", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("fromUser", "username firstName lastName image _id")
+    .populate("toUser", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ notifications });
 };
 
@@ -60,8 +60,8 @@ export const markUnreadNotificationsRead = async (req, res) => {
   await Promise.all(updatePromises);
 
   const updatedNotifications = await Notification.find({ toUser: userId })
-    .populate("fromUser", "username firstName lastName imageCloudinaryUrl _id")
-    .populate("toUser", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("fromUser", "username firstName lastName image _id")
+    .populate("toUser", "username firstName lastName image _id");
 
   res.status(StatusCodes.OK).json({ updatedNotifications });
 };
