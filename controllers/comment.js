@@ -51,7 +51,7 @@ export const createReplyComment = async (req, res) => {
   let aComment = await replyComment.create({ ...req.body });
   aComment = await replyComment
     .findOne({ _id: aComment.id })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   Notification.create({
     fromUser: user.id,
     toUser: comment.user,
@@ -73,7 +73,7 @@ export const getCommentsReplies = async (req, res) => {
   const { commentId } = req.params;
   const replycomments = await replyComment
     .find({ comment: commentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ replycomments });
 };
 
@@ -158,7 +158,7 @@ export const likePostComment = async (req, res) => {
   }
   const commentLikes = await likeComment
     .find({ comment: commentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ commentLikes });
 };
 
@@ -183,7 +183,7 @@ export const unlikePostComment = async (req, res) => {
   }
   const commentLikes = await likeComment
     .find({ comment: commentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ commentLikes });
 };
 
@@ -222,7 +222,7 @@ export const likeAReplyComment = async (req, res) => {
   }
   const likes = await likeReplyComment
     .find({ replyComment: replyCommentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
 };
 
@@ -251,7 +251,7 @@ export const unlikeAReplyComment = async (req, res) => {
   }
   const likes = await likeReplyComment
     .find({ replyComment: replyCommentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ commentReplyLikesCount: likes });
 };
 
@@ -263,7 +263,7 @@ export const getAReplyCommentLikes = async (req, res) => {
   }
   const replyCommentLikes = await likeReplyComment
     .find({ replyComment: replyCommentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ replyCommentLikes });
 };
 
@@ -275,6 +275,6 @@ export const getACommentLikes = async (req, res) => {
   }
   const commentLikes = await likeComment
     .find({ comment: commentId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ commentLikes });
 };

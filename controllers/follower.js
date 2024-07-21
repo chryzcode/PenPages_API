@@ -87,7 +87,7 @@ export const userFollowings = async (req, res) => {
   }
   const followings = await Follower.find({ follower: user._id }).populate(
     "user",
-    "username firstName lastName imageCloudinaryUrl _id"
+    "username firstName lastName image _id"
   );
   res.status(StatusCodes.OK).json({ followings });
 };

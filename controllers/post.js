@@ -74,7 +74,7 @@ export const updatePost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   let allPosts = await Post.find({})
-    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate({ path: "author", select: "username firstName lastName image _id" })
     .populate("tag")
     .sort("createdAt");
 
@@ -106,7 +106,7 @@ export const getPersonalisedPosts = async (req, res) => {
   const followedAuthorIds = followedAuthors.map(follower => follower.user);
 
   let allPosts = await Post.find({ author: { $in: followedAuthorIds } })
-    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate({ path: "author", select: "username firstName lastName image _id" })
     .populate("tag")
     .sort("createdAt");
 
@@ -134,7 +134,7 @@ const getLikesForPost = async postId => {
 export const getPost = async (req, res) => {
   const { postId } = req.params;
   let post = await Post.findOne({ _id: postId })
-    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate({ path: "author", select: "username firstName lastName image _id" })
     .populate("tag");
 
   if (!post) {
@@ -146,7 +146,7 @@ export const getPost = async (req, res) => {
     try {
       const likes = await postLikes
         .find({ post: postId })
-        .populate("user", "username firstName imageCloudinaryUrl lastName _id");
+        .populate("user", "username firstName image lastName _id");
       return likes;
     } catch (error) {
       console.error(`Error fetching likes for post ${postId}:`, error);
@@ -158,7 +158,7 @@ export const getPost = async (req, res) => {
     try {
       const comments = await Comment.find({ post: postId }).populate(
         "user",
-        "username firstName imageCloudinaryUrl lastName _id"
+        "username firstName image lastName _id"
       );
       return comments;
     } catch (error) {
@@ -255,7 +255,7 @@ export const aPostLikes = async (req, res) => {
   }
   const likes = await postLikes
     .find({ post: postId })
-    .populate("user", "username firstName lastName imageCloudinaryUrl _id");
+    .populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ likes });
 };
 
@@ -266,7 +266,7 @@ export const getAUserPosts = async (req, res) => {
     throw new NotFoundError(`User does not exist`);
   }
   let posts = await Post.find({ author: user._id })
-    .populate({ path: "author", select: "username firstName lastName imageCloudinaryUrl _id" })
+    .populate({ path: "author", select: "username firstName lastName image _id" })
     .populate("tag");
 
   const getLikesForPost = async postId => {
