@@ -28,10 +28,6 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "default_avatar.svg",
-    },
-    imageCloudinaryUrl: {
-      type: String,
       default: "https://res.cloudinary.com/diksiwkrx/image/upload/v1707511873/default_avatar_ekflby.svg",
     },
     email: {
