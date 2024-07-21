@@ -6,6 +6,7 @@ import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/
 import User from "../models/user.js";
 import { transporter, generateToken } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
+import { uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
 const uniqueID = uuidv4();
 const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
@@ -159,23 +160,32 @@ export const updatePassword = async (req, res) => {
 export const updateUser = async (req, res) => {
   const { userId } = req.user;
 
-  // Find the user by userId
-  let user = await User.findById(userId);
+  try {
+    // Find the user by userId
+    let user = await User.findById(userId);
 
-  // If user not found, throw an error
-  if (!user) {
-    throw new NotFoundError(`User with id ${userId} does not exist`);
+    // If user not found, throw an error
+    if (!user) {
+      throw new NotFoundError(`User with id ${userId} does not exist`);
+    }
+
+    // Handle image upload if file is present
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      req.body.image = result.secure_url; // Set the Cloudinary URL to the image field
+    }
+
+    // Update the user with the new data
+    user = await User.findOneAndUpdate({ _id: userId }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    // Return success response
+    res.status(StatusCodes.OK).json({ success: "Profile updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
-
-  // Save the updated user
-  user = await User.findOneAndUpdate({ _id: userId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  console.log(user);
-  // Return success response
-  res.status(StatusCodes.OK).json({ success: "Profile updated successfully" });
 };
 
 export const deleteUser = async (req, res) => {
