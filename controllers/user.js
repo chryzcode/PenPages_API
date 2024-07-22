@@ -218,7 +218,7 @@ export const sendForgotPasswordLink = async (req, res) => {
     if (error) {
       res.status(StatusCodes.BAD_REQUEST).send();
     }
-    res.status(StatusCodes.OK).send("Check you email to change your password");
+    res.status(StatusCodes.OK).json({ success: "Check you email to change your password" });
   });
 };
 
