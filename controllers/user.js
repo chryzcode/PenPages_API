@@ -65,7 +65,7 @@ export const verifyAccount = async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const user = await User.findOneAndUpdate({ _id: userId }, { verified: true }, { new: true, runValidators: true });
-    res.status(StatusCodes.OK).send();
+    res.status(StatusCodes.FOUND).redirect(`${FRONTEND_DOMAIN}/sign-in`);
   } catch (error) {
     console.error("Token verification failed:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid or expired token" });
