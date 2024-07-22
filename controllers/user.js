@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import { uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
 const uniqueID = uuidv4();
-const domain = process.env.DOMAIN || "http://127.0.0.1:8000";
+const BACKEND_DOMAIN = process.env.DOMAIN || "http://127.0.0.1:8000";
+const FRONTEND_DOMAIN = process.env.FRONTEND || "http://localhost:3000";
 
 const linkVerificationtoken = generateToken(uniqueID);
 
@@ -37,7 +38,7 @@ export const register = async (req, res) => {
     from: `The Product Conclave ${fromEmail}`,
     to: user.email,
     subject: `${user.firstName} verify your account`,
-    html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
+    html: `<p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account/?userId=${
       user.id
     }/?token=${encodeURIComponent(
       linkVerificationtoken
@@ -94,7 +95,7 @@ export const login = async (req, res) => {
       from: process.env.Email_User,
       to: user.email,
       subject: `${user.firstName} verify your account`,
-      html: `<p>Please use the following <a href="${domain}/auth/verify-account/?userId=${
+      html: `<p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account/?userId=${
         user.id
       }/?token=${encodeURIComponent(
         linkVerificationtoken
@@ -210,7 +211,7 @@ export const sendForgotPasswordLink = async (req, res) => {
     from: process.env.Email_User,
     to: user.email,
     subject: `${user.firstName} you forgot your password`,
-    html: `<p>Please use the following <a href="${domain}/reset-password/${
+    html: `<p>Please use the following <a href="${FRONTEND_DOMAIN}/reset-password/${
       user.id
     }/${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
