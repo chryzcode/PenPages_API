@@ -210,9 +210,9 @@ export const sendForgotPasswordLink = async (req, res) => {
     from: process.env.Email_User,
     to: user.email,
     subject: `${user.firstName} you forgot your password`,
-    html: `<p>Please use the following <a href="${domain}/verify/forgot-password/?userId=${
+    html: `<p>Please use the following <a href="${domain}/reset-password/${
       user.id
-    }/?token=${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
+    }/${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
