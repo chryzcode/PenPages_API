@@ -29,7 +29,7 @@ router.route("/update").put(authenticateUser, multerUpload.single("image"), upda
 router.route("/update/password").put(authenticateUser, updatePassword);
 router.route("/delete").delete(authenticateUser, deleteUser);
 router.route("/send-forgot-password-link").post(sendForgotPasswordLink);
-router.route("/auth/forgot-password/:userId/:token").get(verifyForgotPasswordToken);
+router.route("/auth/forgot-password/:userId/:token").post(verifyForgotPasswordToken);
 router.route("/auth/verify-account/:userId/:token").get(verifyAccount);
 
 export default router;
