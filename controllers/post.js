@@ -282,14 +282,13 @@ export const getAUserPosts = async (req, res) => {
 export const searchPosts = async (req, res) => {
   const { query } = req.query;
 
-  // Initialize query object
-  let searchQuery = {};
+  let searchConditions = [];
 
   if (query) {
-    // Add title search
-    searchQuery.title = { $regex: query, $options: "i" }; // Case-insensitive regex search
+    // Title search
+    searchConditions.push({ title: { $regex: query, $options: "i" } });
 
-    // Find the author(s) matching the query using case-insensitive regex
+    // Author search
     const authorMatches = await User.find({
       $or: [
         { firstName: { $regex: query, $options: "i" } },
@@ -300,25 +299,30 @@ export const searchPosts = async (req, res) => {
 
     if (authorMatches.length > 0) {
       const authorIds = authorMatches.map(user => user._id);
-      searchQuery.author = { $in: authorIds };
+      searchConditions.push({ author: { $in: authorIds } });
     }
 
-    // Find the tags matching the query using case-insensitive regex
+    // Tag search
     const tagMatches = await Tag.find({ name: { $regex: query, $options: "i" } });
 
     if (tagMatches.length > 0) {
       const tagIds = tagMatches.map(tag => tag._id);
-      searchQuery.tag = { $in: tagIds };
+      searchConditions.push({ tag: { $in: tagIds } });
     }
 
-    // Add type search
+    // Type search
     const typeOptions = ["article", "poem", "book"];
     if (typeOptions.includes(query.toLowerCase())) {
-      searchQuery.type = query.toLowerCase();
+      searchConditions.push({ type: query.toLowerCase() });
     }
   }
 
+  let searchQuery = searchConditions.length > 0 ? { $or: searchConditions } : {};
+
+  // Fetch posts matching the search query
   let posts = await Post.find(searchQuery).populate("author tag");
+
+  // Retrieve likes for each post
   const getLikesForPost = async postId => {
     try {
       const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
@@ -329,7 +333,6 @@ export const searchPosts = async (req, res) => {
     }
   };
 
-  // Map over allPosts and retrieve likes for each post
   posts = await Promise.all(
     posts.map(async post => {
       const likes = await getLikesForPost(post._id);
