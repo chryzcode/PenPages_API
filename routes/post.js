@@ -11,6 +11,7 @@ import {
   getPersonalisedPosts,
   aPostLikes,
   getAUserPosts,
+  searchPosts,
 } from "../controllers/post.js";
 import authenticateUser from "../middleware/authentication.js";
 import { multerUpload } from "../utils/cloudinaryConfig.js";
@@ -28,5 +29,6 @@ router
   .delete(authenticateUser, deletePost);
 router.route("/like/:postId").post(authenticateUser, likePost).get(aPostLikes);
 router.route("/unlike/:postId").post(authenticateUser, unlikePost);
+router.route("/search-posts").post(searchPosts);
 
 export default router;

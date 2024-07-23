@@ -4,13 +4,12 @@ import { Post, postLikes } from "../models/post.js";
 import Notification from "../models/notification.js";
 import User from "../models/user.js";
 import Follower from "../models/follower.js";
+import Tag from "../models/tag.js"
 import { Comment } from "../models/comment.js";
 import "dotenv/config.js";
 import { uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
 const DOMAIN = process.env.DOMAIN;
-
-
 
 export const createPost = async (req, res) => {
   req.body.author = req.user.userId;
@@ -144,9 +143,7 @@ export const getPost = async (req, res) => {
   // Function to get likes for the post
   const getLikesForPost = async postId => {
     try {
-      const likes = await postLikes
-        .find({ post: postId })
-        .populate("user", "username firstName image lastName _id");
+      const likes = await postLikes.find({ post: postId }).populate("user", "username firstName image lastName _id");
       return likes;
     } catch (error) {
       console.error(`Error fetching likes for post ${postId}:`, error);
@@ -156,10 +153,7 @@ export const getPost = async (req, res) => {
 
   const getPostComments = async postId => {
     try {
-      const comments = await Comment.find({ post: postId }).populate(
-        "user",
-        "username firstName image lastName _id"
-      );
+      const comments = await Comment.find({ post: postId }).populate("user", "username firstName image lastName _id");
       return comments;
     } catch (error) {
       console.error(`Error fetching comment for post ${postId}:`, error);
@@ -180,8 +174,6 @@ export const getUserPosts = async (req, res) => {
   const userPosts = await Post.find({ author: req.user.userId }).sort("createdAt");
   res.status(StatusCodes.OK).json({ userPosts });
 };
-
-
 
 export const deletePost = async (req, res) => {
   const { postId } = req.params;
@@ -253,9 +245,7 @@ export const aPostLikes = async (req, res) => {
   if (!post) {
     throw new NotFoundError(`Post not found`);
   }
-  const likes = await postLikes
-    .find({ post: postId })
-    .populate("user", "username firstName lastName image _id");
+  const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName image _id");
   res.status(StatusCodes.OK).json({ likes });
 };
 
@@ -287,4 +277,64 @@ export const getAUserPosts = async (req, res) => {
     })
   );
   res.status(StatusCodes.OK).json({ posts });
+};
+
+export const searchPosts = async (req, res) => {
+    const { title, author, tags, type } = req.query;
+
+    // Initialize query object
+    let query = {};
+
+    if (title) {
+      query.title = { $regex: title, $options: "i" }; // Case-insensitive regex search
+    }
+
+    if (author) {
+      // Split author query to handle first and last names
+      const authorParts = author.split(" ").filter(part => part.trim() !== "");
+      let authorQuery = [];
+
+      // Create regex for each part and combine into search query
+      authorParts.forEach(part => {
+        const regex = new RegExp(part, "i"); // Case-insensitive regex
+        authorQuery.push({ firstName: regex }, { lastName: regex }, { username: regex });
+      });
+
+      // Find the author(s) matching the query using case-insensitive regex
+      const authorMatches = await User.find({
+        $or: authorQuery,
+      });
+
+      if (authorMatches.length > 0) {
+        const authorIds = authorMatches.map(user => user._id);
+        query.author = { $in: authorIds };
+      } else {
+        // If no matching author, return empty result
+        return res.status(200).json({ posts: [] });
+      }
+    }
+
+    if (tags) {
+      // Split tags by comma and trim spaces
+      const tagArray = tags.split(",").map(tag => tag.trim());
+      // Find the tags matching the query using case-insensitive regex
+      const tagMatches = await Tag.find({ name: { $in: tagArray.map(tag => new RegExp(tag, "i")) } });
+
+      if (tagMatches.length > 0) {
+        const tagIds = tagMatches.map(tag => tag._id);
+        query.tag = { $in: tagIds };
+      } else {
+        // If no matching tags, return empty result
+        return res.status(200).json({ posts: [] });
+      }
+    }
+
+    if (type) {
+      query.type = type;
+    }
+
+    const posts = await Post.find(query).populate("author tag");
+
+    res.status(200).json({ posts });
+
 };
