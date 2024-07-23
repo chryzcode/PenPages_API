@@ -282,43 +282,65 @@ export const getAUserPosts = async (req, res) => {
 export const searchPosts = async (req, res) => {
   const { query } = req.query;
 
-  // Initialize query object
+  // Initialize search query object
   let searchQuery = {};
+    if (query) {
+      // Add title search
+      searchQuery.title = { $regex: query, $options: "i" }; // Case-insensitive regex search
 
-  if (query) {
-    // Add title search
-    searchQuery.title = { $regex: query, $options: "i" }; // Case-insensitive regex search
+      // Find the author(s) matching the query using case-insensitive regex
+      const authorMatches = await User.find({
+        $or: [
+          { firstName: { $regex: query, $options: "i" } },
+          { lastName: { $regex: query, $options: "i" } },
+          { username: { $regex: query, $options: "i" } },
+        ],
+      });
 
-    // Find the author(s) matching the query using case-insensitive regex
-    const authorMatches = await User.find({
-      $or: [
-        { firstName: { $regex: query, $options: "i" } },
-        { lastName: { $regex: query, $options: "i" } },
-        { username: { $regex: query, $options: "i" } },
-      ],
-    });
+      if (authorMatches.length > 0) {
+        const authorIds = authorMatches.map(user => user._id);
+        searchQuery.author = { $in: authorIds };
+      }
 
-    if (authorMatches.length > 0) {
-      const authorIds = authorMatches.map(user => user._id);
-      searchQuery.author = { $in: authorIds };
+      // Find the tags matching the query using case-insensitive regex
+      const tagMatches = await Tag.find({ name: { $regex: query, $options: "i" } });
+
+      if (tagMatches.length > 0) {
+        const tagIds = tagMatches.map(tag => tag._id);
+        searchQuery.tag = { $in: tagIds };
+      }
+
+      // Add type search if the query matches one of the predefined types
+      const typeOptions = ["article", "poem", "book"];
+      if (typeOptions.includes(query.toLowerCase())) {
+        searchQuery.type = query.toLowerCase();
+      }
     }
 
-    // Find the tags matching the query using case-insensitive regex
-    const tagMatches = await Tag.find({ name: { $regex: query, $options: "i" } });
-
-    if (tagMatches.length > 0) {
-      const tagIds = tagMatches.map(tag => tag._id);
-      searchQuery.tag = { $in: tagIds };
-    }
-
-    // Add type search
-    const typeOptions = ["article", "poem", "book"];
-    if (typeOptions.includes(query.toLowerCase())) {
-      searchQuery.type = query.toLowerCase();
-    }
+    // Fetch posts matching the search query and populate author and tag fields
+    let allPosts = await Post.find(searchQuery)
+      .populate("author tag")
+    .select("title image body author tag type createdAt updatedAt");
+  
+  const getLikesForPost = async postId => {
+  try {
+    const likes = await postLikes.find({ post: postId }).populate("user", "username firstName lastName _id");
+    return likes;
+  } catch (error) {
+    console.error(`Error fetching likes for post ${postId}:`, error);
+    return [];
   }
+};
 
-  const posts = await Post.find(searchQuery).populate("author tag");
+    // Map over allPosts and retrieve likes for each post
+    allPosts = await Promise.all(
+      allPosts.map(async post => {
+        const likes = await getLikesForPost(post._id);
+        return { ...post.toObject(), likes: likes.length }; // Merge likes count into the post object
+      })
+    );
 
-  res.status(200).json({ posts });
+    // Respond with the matching posts with likes count
+    res.status(200).json({ posts: allPosts });
+  
 };
