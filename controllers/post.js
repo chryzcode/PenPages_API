@@ -280,61 +280,45 @@ export const getAUserPosts = async (req, res) => {
 };
 
 export const searchPosts = async (req, res) => {
-    const { title, author, tags, type } = req.query;
+  const { query } = req.query;
 
-    // Initialize query object
-    let query = {};
+  // Initialize query object
+  let searchQuery = {};
 
-    if (title) {
-      query.title = { $regex: title, $options: "i" }; // Case-insensitive regex search
+  if (query) {
+    // Add title search
+    searchQuery.title = { $regex: query, $options: "i" }; // Case-insensitive regex search
+
+    // Find the author(s) matching the query using case-insensitive regex
+    const authorMatches = await User.find({
+      $or: [
+        { firstName: { $regex: query, $options: "i" } },
+        { lastName: { $regex: query, $options: "i" } },
+        { username: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    if (authorMatches.length > 0) {
+      const authorIds = authorMatches.map(user => user._id);
+      searchQuery.author = { $in: authorIds };
     }
 
-    if (author) {
-      // Split author query to handle first and last names
-      const authorParts = author.split(" ").filter(part => part.trim() !== "");
-      let authorQuery = [];
+    // Find the tags matching the query using case-insensitive regex
+    const tagMatches = await Tag.find({ name: { $regex: query, $options: "i" } });
 
-      // Create regex for each part and combine into search query
-      authorParts.forEach(part => {
-        const regex = new RegExp(part, "i"); // Case-insensitive regex
-        authorQuery.push({ firstName: regex }, { lastName: regex }, { username: regex });
-      });
-
-      // Find the author(s) matching the query using case-insensitive regex
-      const authorMatches = await User.find({
-        $or: authorQuery,
-      });
-
-      if (authorMatches.length > 0) {
-        const authorIds = authorMatches.map(user => user._id);
-        query.author = { $in: authorIds };
-      } else {
-        // If no matching author, return empty result
-        return res.status(200).json({ posts: [] });
-      }
+    if (tagMatches.length > 0) {
+      const tagIds = tagMatches.map(tag => tag._id);
+      searchQuery.tag = { $in: tagIds };
     }
 
-    if (tags) {
-      // Split tags by comma and trim spaces
-      const tagArray = tags.split(",").map(tag => tag.trim());
-      // Find the tags matching the query using case-insensitive regex
-      const tagMatches = await Tag.find({ name: { $in: tagArray.map(tag => new RegExp(tag, "i")) } });
-
-      if (tagMatches.length > 0) {
-        const tagIds = tagMatches.map(tag => tag._id);
-        query.tag = { $in: tagIds };
-      } else {
-        // If no matching tags, return empty result
-        return res.status(200).json({ posts: [] });
-      }
+    // Add type search
+    const typeOptions = ["article", "poem", "book"];
+    if (typeOptions.includes(query.toLowerCase())) {
+      searchQuery.type = query.toLowerCase();
     }
+  }
 
-    if (type) {
-      query.type = type;
-    }
+  const posts = await Post.find(searchQuery).populate("author tag");
 
-    const posts = await Post.find(query).populate("author tag");
-
-    res.status(200).json({ posts });
-
+  res.status(200).json({ posts });
 };
