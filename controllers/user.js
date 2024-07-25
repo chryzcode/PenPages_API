@@ -119,7 +119,7 @@ export const login = async (req, res) => {
     // Other cookie options such as expiration, secure, domain, etc.
   });
 
-  res.status(StatusCodes.OK).json({ user: { firstName: user.firstName }, token });
+  res.status(StatusCodes.OK).json({ user, token });
 };
 
 export const getAllUsers = async (req, res) => {
