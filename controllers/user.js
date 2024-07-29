@@ -33,31 +33,45 @@ export const currentUser = async (req, res) => {
 
 export const register = async (req, res) => {
   const user = await User.create({ ...req.body });
-  const fromEmail = process.env.Email_User;
-  const maildata = {
+  const linkVerificationToken = generateToken(user.id);
+  const fromEmail = process.env.EMAIL_USER;
+
+  const mailData = {
     from: `The Product Conclave ${fromEmail}`,
-    to: user.email,
-    subject: `${user.firstName} verify your account`,
-    html: `<p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account/?userId=${
+    to: `${user.firstName} ${user.lastName} <${user.email}>`,
+    subject: `${user.firstName}, verify your account`,
+    text: `Hi ${
+      user.firstName
+    },\n\nPlease use the following link to verify your account: ${BACKEND_DOMAIN}/auth/verify-account?userId=${
       user.id
-    }/?token=${encodeURIComponent(
-      linkVerificationtoken
-    )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+    }&token=${encodeURIComponent(
+      linkVerificationToken
+    )}. Link expires in 20 minutes.\n\nBest regards,\nThe Product Conclave Team`,
+    html: `<p>Hi ${
+      user.firstName
+    },</p><p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account?userId=${
+      user.id
+    }&token=${encodeURIComponent(
+      linkVerificationToken
+    )}">link</a> to verify your account. Link expires in 20 minutes.</p><p>Best regards,<br>The Product Conclave Team</p>`,
   };
-  transporter.sendMail(maildata, (error, info) => {
+
+  transporter.sendMail(mailData, (error, info) => {
     if (error) {
-      res.status(StatusCodes.BAD_REQUEST).send();
+      console.error("Error sending email:", error);
+      return res.status(400).json({ error: "Failed to send verification email" });
     }
-    res.status(StatusCodes.OK).send();
+    console.log("Email sent:", info.response);
+    res.status(200).json({ success: "Check your email for account verification" });
   });
+
   const token = user.createJWT();
-  res.status(StatusCodes.CREATED).json({
+  res.status(201).json({
     user: { firstName: user.firstName, lastName: user.lastName },
     token,
-    success: "check your mail for account verification",
+    success: "Check your email for account verification",
   });
 };
-
 export const verifyAccount = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
@@ -211,9 +225,9 @@ export const sendForgotPasswordLink = async (req, res) => {
     from: process.env.Email_User,
     to: user.email,
     subject: `${user.firstName} you forgot your password`,
-    html: `<p>Please use the following <a href="${FRONTEND_DOMAIN}/reset-password/${
-      user.id
-    }/${encodeURIComponent(linkVerificationtoken)}">link</a> for verification. Link expires in 30 mins.</p>`,
+    html: `<p>Please use the following <a href="${FRONTEND_DOMAIN}/reset-password/${user.id}/${encodeURIComponent(
+      linkVerificationtoken
+    )}">link</a> for verification. Link expires in 30 mins.</p>`,
   };
   transporter.sendMail(maildata, (error, info) => {
     if (error) {
