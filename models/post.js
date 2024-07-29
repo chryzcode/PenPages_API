@@ -16,7 +16,6 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: [true, "Body field is compulsory"],
       minlength: 5,
-      maxlength: 70,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
