@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index.js";
 import User from "../models/user.js";
-import { transporter, generateToken } from "../utils/user.js";
+import { generateToken, sendEmail } from "../utils/user.js";
 import { v4 as uuidv4 } from "uuid";
 import { uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
@@ -32,46 +32,39 @@ export const currentUser = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  const user = await User.create({ ...req.body });
-  const linkVerificationToken = generateToken(user.id);
-  const fromEmail = process.env.EMAIL_USER;
+  try {
+    // Create user
+    const user = await User.create({ ...req.body });
+    const linkVerificationToken = generateToken(user.id);
 
-  const mailData = {
-    from: `The Product Conclave ${fromEmail}`,
-    to: `${user.firstName} ${user.lastName} <${user.email}>`,
-    subject: `${user.firstName}, verify your account`,
-    text: `Hi ${
-      user.firstName
-    },\n\nPlease use the following link to verify your account: ${BACKEND_DOMAIN}/auth/verify-account?userId=${
-      user.id
-    }&token=${encodeURIComponent(
-      linkVerificationToken
-    )}. Link expires in 20 minutes.\n\nBest regards,\nThe Product Conclave Team`,
-    html: `<p>Hi ${
-      user.firstName
-    },</p><p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account?userId=${
-      user.id
-    }&token=${encodeURIComponent(
-      linkVerificationToken
-    )}">link</a> to verify your account. Link expires in 20 minutes.</p><p>Best regards,<br>The Product Conclave Team</p>`,
-  };
+    // Prepare the verification email
+    const mailData = {
+      to: user.email,
+      subject: `${user.firstName}, verify your account`,
+      htmlContent: `<p>Hi ${user.firstName},</p>
+                    <p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account?userId=${user.id}&token=${encodeURIComponent(linkVerificationToken)}">link</a> to verify your account. Link expires in 20 minutes.</p>
+                    <p>Best regards,<br>The Product Conclave Team</p>`,
+    };
 
-  transporter.sendMail(mailData, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      return res.status(400).json({ error: "Failed to send verification email" });
-    }
-    console.log("Email sent:", info.response);
-    res.status(200).json({ success: "Check your email for account verification" });
-  });
+    // Send the verification email using the sendEmail function
+    await sendEmail(mailData.to, mailData.subject, mailData.htmlContent);
 
-  const token = user.createJWT();
-  res.status(201).json({
-    user: { firstName: user.firstName, lastName: user.lastName },
-    token,
-    success: "Check your email for account verification",
-  });
+    // Generate JWT token
+    const token = user.createJWT();
+
+    // Respond with the user and token
+    res.status(201).json({
+      user: { firstName: user.firstName, lastName: user.lastName },
+      token,
+      success: 'Check your email for account verification',
+    });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ error: 'An error occurred during registration' });
+  }
 };
+
+
 export const verifyAccount = async (req, res) => {
   const token = req.params.token;
   const userId = req.params.userId;
@@ -92,47 +85,53 @@ export const login = async (req, res) => {
     throw new BadRequestError("Put in your email/username and password");
   }
 
-  var userByEmail = await User.findOne({ email: email });
-  var userByUsername = await User.findOne({ username: email });
+  // Check for user by email or username
+  const userByEmail = await User.findOne({ email: email });
+  const userByUsername = await User.findOne({ username: email });
 
-  var user = userByEmail || userByUsername;
+  const user = userByEmail || userByUsername;
   if (!user) {
     throw new NotFoundError("User does not exist");
   }
 
+  // Validate password
   const passwordMatch = await user.comparePassword(password);
   if (!passwordMatch) {
     throw new UnauthenticatedError("Invalid password");
   }
-  if (user.verified == false) {
-    const maildata = {
-      from: process.env.Email_User,
+
+  // If the account is not verified, send a verification email
+  if (user.verified === false) {
+    const linkVerificationToken = generateToken(user.id);  // You may need to adjust this based on how you generate tokens
+    const mailData = {
       to: user.email,
       subject: `${user.firstName} verify your account`,
-      html: `<p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account/?userId=${
-        user.id
-      }/?token=${encodeURIComponent(
-        linkVerificationtoken
-      )}">link</a> to verify your account. Link expires in 10 mins.</p>`,
+      htmlContent: `<p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account/?userId=${user.id}&token=${encodeURIComponent(linkVerificationToken)}">link</a> to verify your account. Link expires in 10 minutes.</p>`,
     };
-    transporter.sendMail(maildata, (error, info) => {
-      if (error) {
-        res.status(StatusCodes.BAD_REQUEST).send();
-      }
-      res.status(StatusCodes.OK).send();
-    });
-    throw new UnauthenticatedError("Account is not verified, kindly check your mail for verfication");
-  }
-  var token = user.createJWT();
-  await User.findOneAndUpdate({ token: token });
-  token = user.token;
 
+    try {
+      await sendEmail(mailData.to, mailData.subject, mailData.htmlContent);
+      res.status(StatusCodes.OK).json({ message: 'Verification email sent. Check your inbox.' });
+    } catch (error) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: 'Failed to send verification email' });
+    }
+
+    throw new UnauthenticatedError("Account is not verified, kindly check your mail for verification");
+  }
+
+  // Generate a JWT token
+  let token = user.createJWT();
+
+  // Update user with the new token
+  await User.findOneAndUpdate({ _id: user._id }, { token: token });
+
+  // Set the token as a cookie
   res.cookie("accessToken", token, {
-    // httpOnly: true,
-    expire: 48 * 60 * 60 * 1000, //after 2 days (48 hrs)
-    // Other cookie options such as expiration, secure, domain, etc.
+    // httpOnly: true, // Enable this if you want the cookie to be only accessible via HTTP requests
+    expire: 48 * 60 * 60 * 1000, // Expire in 48 hours
   });
 
+  // Respond with the user data and the token
   res.status(StatusCodes.OK).json({ user, token });
 };
 
@@ -214,27 +213,36 @@ export const deleteUser = async (req, res) => {
 
 export const sendForgotPasswordLink = async (req, res) => {
   const { email } = req.body;
+
+  // Validate email input
   if (!email) {
     throw new BadRequestError("Email field is required");
   }
+
+  // Check if the user exists
   const user = await User.findOne({ email: email });
   if (!user) {
-    throw new NotFoundError("User does not exists");
+    throw new NotFoundError("User does not exist");
   }
-  const maildata = {
-    from: process.env.Email_User,
+
+  // Generate a verification token (assuming you have a function to generate tokens)
+  const linkVerificationToken = generateToken(user.id);  // Adjust based on your token generation logic
+
+  // Prepare the email content
+  const mailData = {
     to: user.email,
-    subject: `${user.firstName} you forgot your password`,
-    html: `<p>Please use the following <a href="${FRONTEND_DOMAIN}/reset-password/${user.id}/${encodeURIComponent(
-      linkVerificationtoken
-    )}">link</a> for verification. Link expires in 30 mins.</p>`,
+    subject: `${user.firstName}, you forgot your password`,
+    htmlContent: `<p>Please use the following <a href="${FRONTEND_DOMAIN}/reset-password/${user.id}/${encodeURIComponent(linkVerificationToken)}">link</a> to reset your password. Link expires in 30 minutes.</p>`,
   };
-  transporter.sendMail(maildata, (error, info) => {
-    if (error) {
-      res.status(StatusCodes.BAD_REQUEST).send();
-    }
-    res.status(StatusCodes.OK).json({ success: "Check you email to change your password" });
-  });
+
+  try {
+    // Send the email using the sendEmail function
+    await sendEmail(mailData.to, mailData.subject, mailData.htmlContent);
+    res.status(StatusCodes.OK).json({ success: "Check your email to change your password" });
+  } catch (error) {
+    // Handle error if sending email fails
+    res.status(StatusCodes.BAD_REQUEST).json({ error: "Failed to send reset password email" });
+  }
 };
 
 export const verifyForgotPasswordToken = async (req, res) => {
