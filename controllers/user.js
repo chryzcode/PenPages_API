@@ -32,35 +32,42 @@ export const currentUser = async (req, res) => {
 };
 
 export const register = async (req, res) => {
+  const { email, password, firstName, lastName } = req.body;
+
+  // Check if email already exists in the database
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({ error: "Email is already registered" });
+  }
+
   try {
-    // Create user
+    // Proceed with user registration if the email doesn't exist
     const user = await User.create({ ...req.body });
+
+    // Create a verification token (you should generate your token here)
     const linkVerificationToken = generateToken(user.id);
 
-    // Prepare the verification email
+    // Construct the email data
     const mailData = {
+      from: `The Product Conclave ${process.env.EMAIL_USER}`,
       to: user.email,
       subject: `${user.firstName}, verify your account`,
-      htmlContent: `<p>Hi ${user.firstName},</p>
-                    <p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account?userId=${user.id}&token=${encodeURIComponent(linkVerificationToken)}">link</a> to verify your account. Link expires in 20 minutes.</p>
-                    <p>Best regards,<br>The Product Conclave Team</p>`,
+      html: `<p>Hi ${user.firstName},</p><p>Please use the following <a href="${BACKEND_DOMAIN}/auth/verify-account?userId=${user.id}&token=${encodeURIComponent(linkVerificationToken)}">link</a> to verify your account. Link expires in 20 minutes.</p><p>Best regards,<br>The Product Conclave Team</p>`,
     };
 
-    // Send the verification email using the sendEmail function
-    await sendEmail(mailData.to, mailData.subject, mailData.htmlContent);
+    // Send the verification email
+    await sendEmail(user.email, `${user.firstName}, verify your account`, mailData.html);
 
-    // Generate JWT token
+    // Create a JWT token for the user and send it in the response
     const token = user.createJWT();
-
-    // Respond with the user and token
     res.status(201).json({
       user: { firstName: user.firstName, lastName: user.lastName },
       token,
-      success: 'Check your email for account verification',
+      success: "Check your email for account verification",
     });
   } catch (error) {
-    console.error('Error during registration:', error);
-    res.status(500).json({ error: 'An error occurred during registration' });
+    console.error("Error during registration:", error);
+    res.status(500).json({ error: "An error occurred during registration" });
   }
 };
 
